@@ -53,6 +53,10 @@ export default function HomeScreen() {
             title="Fresh start"
             hint={<ThemedText type="code">npm run reset-project</ThemedText>}
           />
+          <HintRow
+            title="NFC Research"
+            hint={<ThemedText type="code">src/app/nfc-research.tsx</ThemedText>}
+          />
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
