@@ -35,11 +35,22 @@ npm run reset-project
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-### Other setup steps
+## NFC Research (iOS Capabilities)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+We have evaluated the feasibility of NFC-based Peer-to-Peer (P2P) payments on iOS.
+
+**Key Findings:**
+- **P2P Feasibility:** **NO**. iOS does not support true device-to-device NFC communication for third-party apps.
+- **HCE/SE Access:** Highly restricted, gated by entitlements, and primarily intended for merchant terminals (not P2P).
+- **Recommendation:** Use **QR Codes** as the primary cross-platform P2P payment method.
+
+For more details, see the full report: [NFC_Capabilities_iOS.md](docs/research/NFC_Capabilities_iOS.md)
+
+### Running the NFC Demo
+To test the current NFC capabilities (Reader mode):
+1. Install a Development Build (NFC does not work in Expo Go).
+2. Navigate to the **NFC Research** screen from the home page.
+3. Use a physical iOS device and an NDEF-compatible tag.
 
 ## Learn more
 
