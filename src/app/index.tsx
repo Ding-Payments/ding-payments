@@ -1,102 +1,157 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { useRouter } from 'expo-router';
+import { useTheme } from '@/hooks/use-theme';
+import { Spacing, Radius } from '@/constants/theme';
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const theme = useTheme();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <Text style={[styles.brand, { color: theme.text }]}>Ding</Text>
+          <View style={styles.balanceContainer}>
+            <Text style={[styles.balanceLabel, { color: theme.textSecondary }]}>Total Balance</Text>
+            <Text style={[styles.balanceAmount, { color: theme.text }]}>$1,240.50</Text>
+          </View>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {/* Primary CTAs */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: theme.primary }]}
+            onPress={() => router.push('/send')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.actionText, { color: theme.primaryForeground }]}>Send Payment</Text>
+          </TouchableOpacity>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-          <HintRow
-            title="NFC Research"
-            hint={<ThemedText type="code">src/app/nfc-research.tsx</ThemedText>}
-          />
-        </ThemedView>
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}
+            onPress={() => router.push('/receive')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.actionText, { color: theme.text }]}>Receive Payment</Text>
+          </TouchableOpacity>
+        </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        {/* Recent Activity */}
+        <View style={styles.activitySection}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Recent Activity</Text>
+          
+          <View style={[styles.activityCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <View style={styles.activityItem}>
+              <View style={styles.activityInfo}>
+                <Text style={[styles.activityName, { color: theme.text }]}>Coffee Shop</Text>
+                <Text style={[styles.activityDate, { color: theme.textSecondary }]}>Today, 9:41 AM</Text>
+              </View>
+              <Text style={[styles.activityAmount, { color: theme.text }]}>-$4.50</Text>
+            </View>
+
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+            <View style={styles.activityItem}>
+              <View style={styles.activityInfo}>
+                <Text style={[styles.activityName, { color: theme.text }]}>Alice Smith</Text>
+                <Text style={[styles.activityDate, { color: theme.textSecondary }]}>Yesterday</Text>
+              </View>
+              <Text style={[styles.activityAmountPositive, { color: theme.primary }]}>+$25.00</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
-  heroSection: {
+  container: {
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.five,
+  },
+  header: {
+    marginBottom: Spacing.five,
+  },
+  brand: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: Spacing.four,
+  },
+  balanceContainer: {
+    marginTop: Spacing.two,
+  },
+  balanceLabel: {
+    fontSize: 14,
+    marginBottom: Spacing.half,
+  },
+  balanceAmount: {
+    fontSize: 36,
+    fontWeight: '800',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: Spacing.three,
+    marginBottom: Spacing.five,
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  actionText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  activitySection: {
+    marginTop: Spacing.two,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: Spacing.three,
+  },
+  activityCard: {
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  activityItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.three,
+  },
+  activityInfo: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
-  title: {
-    textAlign: 'center',
+  activityName: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 2,
   },
-  code: {
-    textTransform: 'uppercase',
+  activityDate: {
+    fontSize: 13,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  activityAmount: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  activityAmountPositive: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: Spacing.three,
   },
 });
