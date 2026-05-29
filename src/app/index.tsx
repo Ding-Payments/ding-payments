@@ -1,9 +1,12 @@
+import { router } from 'expo-router';
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
+import { PrimaryActionButton } from '@/components/primary-action-button';
+import { SecondaryActionButton } from '@/components/secondary-action-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
@@ -35,24 +38,32 @@ export default function HomeScreen() {
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Ding Payments
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
+            Tap-to-pay on Stellar
           </ThemedText>
         </ThemedView>
 
+        <View style={styles.payActions}>
+          <PrimaryActionButton
+            label="Send"
+            onPress={() => router.push('/send')}
+            style={styles.payButton}
+          />
+          <SecondaryActionButton
+            label="Receive"
+            onPress={() => router.push('/receive')}
+            style={styles.payButton}
+          />
+        </View>
+
         <ThemedText type="code" style={styles.code}>
-          get started
+          dev tools
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
+          <HintRow title="Dev menu" hint={getDevMenuHint()} />
           <HintRow
             title="NFC Research"
             hint={<ThemedText type="code">src/app/nfc-research.tsx</ThemedText>}
@@ -84,10 +95,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    gap: Spacing.two,
   },
   title: {
     textAlign: 'center',
+  },
+  subtitle: {
+    textAlign: 'center',
+  },
+  payActions: {
+    flexDirection: 'row',
+    gap: Spacing.three,
+    alignSelf: 'stretch',
+  },
+  payButton: {
+    flex: 1,
   },
   code: {
     textTransform: 'uppercase',
