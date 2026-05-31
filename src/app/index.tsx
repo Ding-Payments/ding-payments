@@ -1,12 +1,19 @@
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { router } from 'expo-router';
+import * as Device from 'expo-device';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/use-theme';
 import { Spacing, Radius } from '@/constants/theme';
 
-export default function HomeScreen() {
-  const router = useRouter();
-  const theme = useTheme();
+import { AnimatedIcon } from '@/components/animated-icon';
+import { HintRow } from '@/components/hint-row';
+import { PrimaryActionButton } from '@/components/primary-action-button';
+import { SecondaryActionButton } from '@/components/secondary-action-button';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { WebBadge } from '@/components/web-badge';
+import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
@@ -20,37 +27,44 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Primary CTAs */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity 
-            style={[styles.actionButton, { backgroundColor: theme.primary }]}
-            onPress={() => router.push('/send')}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.actionText, { color: theme.primaryForeground }]}>Send Payment</Text>
-          </TouchableOpacity>
+export default function HomeScreen() {
+  return (
+    <ThemedView style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <ThemedView style={styles.heroSection}>
+          <AnimatedIcon />
+          <ThemedText type="title" style={styles.title}>
+            Ding Payments
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
+            Tap-to-pay on Stellar
+          </ThemedText>
+        </ThemedView>
 
-          <TouchableOpacity 
-            style={[styles.actionButton, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}
+        <View style={styles.payActions}>
+          <PrimaryActionButton
+            label="Send"
+            onPress={() => router.push('/send')}
+            style={styles.payButton}
+          />
+          <SecondaryActionButton
+            label="Receive"
             onPress={() => router.push('/receive')}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.actionText, { color: theme.text }]}>Receive Payment</Text>
-          </TouchableOpacity>
+            style={styles.payButton}
+          />
         </View>
 
-        {/* Recent Activity */}
-        <View style={styles.activitySection}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Recent Activity</Text>
-          
-          <View style={[styles.activityCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <View style={styles.activityItem}>
-              <View style={styles.activityInfo}>
-                <Text style={[styles.activityName, { color: theme.text }]}>Coffee Shop</Text>
-                <Text style={[styles.activityDate, { color: theme.textSecondary }]}>Today, 9:41 AM</Text>
-              </View>
-              <Text style={[styles.activityAmount, { color: theme.text }]}>-$4.50</Text>
-            </View>
+        <ThemedText type="code" style={styles.code}>
+          dev tools
+        </ThemedText>
+
+        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+          <HintRow title="Dev menu" hint={getDevMenuHint()} />
+          <HintRow
+            title="NFC Research"
+            hint={<ThemedText type="code">src/app/nfc-research.tsx</ThemedText>}
+          />
+        </ThemedView>
 
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
@@ -133,14 +147,27 @@ const styles = StyleSheet.create({
   },
   activityInfo: {
     flex: 1,
+    paddingHorizontal: Spacing.four,
+    gap: Spacing.two,
   },
   activityName: {
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 2,
   },
-  activityDate: {
-    fontSize: 13,
+  subtitle: {
+    textAlign: 'center',
+  },
+  payActions: {
+    flexDirection: 'row',
+    gap: Spacing.three,
+    alignSelf: 'stretch',
+  },
+  payButton: {
+    flex: 1,
+  },
+  code: {
+    textTransform: 'uppercase',
   },
   activityAmount: {
     fontSize: 16,
