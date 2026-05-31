@@ -2,16 +2,18 @@ import { StyleSheet, View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/use-theme';
 import { Spacing } from '@/constants/theme';
+import { Stack } from 'expo-router';
 
-export default function ExploreScreen() {
+export default function SendScreen() {
   const theme = useTheme();
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Stack.Screen options={{ title: 'Send Payment' }} />
       <View style={styles.container}>
-        <Text style={[styles.title, { color: theme.text }]}>Explore</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Send Funds</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Discover new ways to manage and spend your funds.
+          Enter an address or scan a QR code to send payments.
         </Text>
       </View>
     </SafeAreaView>
@@ -28,7 +30,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.three,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     marginBottom: Spacing.two,
   },
