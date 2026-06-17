@@ -7,20 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "dingpayments",
     "userInterfaceStyle": "automatic",
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#208AEF",
-          "android": {
-            "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
-          }
-        }
-      ],
-      "react-native-nfc-manager"
-    ],
+    "ios": {
+      "icon": "./assets/expo.icon"
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -34,15 +23,19 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "ios": {
-      "icon": "./assets/expo.icon",
-      "infoPlist": {
-        "NFCReaderUsageDescription": "Allow Ding Payments to scan NFC tags for payment validation."
-      },
-      "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["NDEF", "TAG"]
-      }
-    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#208AEF",
+          "android": {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 76
+          }
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
