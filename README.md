@@ -1,5 +1,20 @@
 # Welcome to your Expo app 👋
+# Ding Payments — Mobile Client MVP
 
+This repository contains the core React Native application built with Expo Router and the Soroban Smart Contract SDK for the Ding Payments network.
+
+## 🛠 Prerequisites
+* **Node.js**: v18 or later
+* **Package Manager**: `npm`
+* **Development Target**: iOS (Simulator) or Android (Emulator)
+
+> ⚠️ **Native Framework Limitation**: This application leverages advanced hardware integrations including **NFC capabilities** and **Passkey WebAuthn modules**. These features **cannot** execute inside standard Expo Go. You must compile and run using an explicit **Development Build** (`npx expo run:ios` or `npx expo run:android`).
+
+## 🚀 Local Development Setup
+
+1. **Clone the Repository & Fetch Dependencies**
+   ```bash
+   npm install
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
