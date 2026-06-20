@@ -15,6 +15,20 @@ This repository contains the core React Native application built with Expo Route
 1. **Clone the Repository & Fetch Dependencies**
    ```bash
    npm install
+   ```
+
+2. **Build requirements for native features**
+   - NFC and passkey research require an Expo development build or custom native runtime.
+   - Run `npx expo prebuild` and `npx expo run:android` / `npx expo run:ios` for device validation.
+   - Use `npm run dev-client` to launch a dev-client session after native dependencies are installed.
+
+## C05 Spike documentation
+
+- Passkey ADR: [`docs/adr-passkey-library.md`](docs/adr-passkey-library.md)
+- Stellar ADR: [`docs/adr-stellar-sdk.md`](docs/adr-stellar-sdk.md)
+- NFC ADR: [`docs/adr-nfc-library.md`](docs/adr-nfc-library.md)
+- Spike PoC page: open `/c05` in the app after starting the dev-client.
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
