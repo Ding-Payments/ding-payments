@@ -4,13 +4,14 @@
   },
   "build": {
     "development": {
+      "developmentClient": true,
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "buildType": "simulator"
       }
+    },
+    "preview": {
+      "distribution": "internal"
     },
     "production": {
       "distribution": "store",
