@@ -6,9 +6,9 @@ This repository contains the core React Native application built with Expo Route
 ## 🛠 Prerequisites
 * **Node.js**: v18 or later
 * **Package Manager**: `npm`
-* **Development Target**: iOS (Simulator) or Android (Emulator)
+* **Development Target**: Physical iOS or Android device (required for NFC, passkeys, and SecureStore biometrics); simulator/emulator for UI-only work
 
-> ⚠️ **Native Framework Limitation**: This application leverages advanced hardware integrations including **NFC capabilities** and **Passkey WebAuthn modules**. These features **cannot** execute inside standard Expo Go. You must compile and run using an explicit **Development Build** (`npx expo run:ios` or `npx expo run:android`).
+> ⚠️ Native Framework Limitation: This application leverages advanced hardware integrations including NFC capabilities and Passkey WebAuthn modules. These features cannot execute inside standard Expo Go. You must use an Expo Development Build (EAS Development Build) to validate NFC, passkeys, and SecureStore functionality on physical devices.
 
 ## 🚀 Local Development Setup
 
@@ -21,6 +21,50 @@ This repository contains the core React Native application built with Expo Route
    - NFC and passkey research require an Expo development build or custom native runtime.
    - Run `npx expo prebuild` and `npx expo run:android` / `npx expo run:ios` for device validation.
    - Use `npm run dev-client` to launch a dev-client session after native dependencies are installed.
+
+## EAS Development Build
+
+1. **Install and authenticate EAS CLI**
+   ```bash
+   npm install -g eas-cli
+   eas login
+   ```
+   On first setup, link the project with `eas init`. Build profiles live in `eas.json` (`development`, `preview`, `production`).
+
+2. **Create a development build**
+   ```bash
+   npm run dev:build:android
+   # or
+   npm run dev:build:ios
+   ```
+   Install the resulting build on a **physical device** (`.apk` on Android; iOS via internal distribution or TestFlight).
+
+3. **Start the dev client**
+   ```bash
+   npm run dev-client
+   ```
+   This runs `expo start --dev-client` and connects the installed development build to Metro.
+
+4. **Native rebuild required**
+   Rebuild and reinstall the development build after changes to:
+   - `app.config.ts` plugins, permissions, or entitlements
+   - native dependencies (for example `expo-dev-client`, `expo-secure-store`, `react-native-nfc-manager`, `react-native-passkey`)
+
+   JavaScript-only changes do not require a native rebuild.
+
+5. **Expo Go limitations**
+   Do not use Expo Go to validate NFC, passkeys, or SecureStore with biometric authentication. These flows require a development build with `expo-dev-client`.
+
+6. **Simulator vs physical device**
+
+   | Feature | Simulator / emulator | Physical device |
+   | --- | --- | --- |
+   | General UI / routing | Yes | Yes |
+   | NFC | No | Yes (required) |
+   | Passkeys | Limited / unreliable | Yes (required) |
+   | SecureStore + biometrics | Limited | Yes (required) |
+
+   Use a physical device for native capability smoke tests, including the `/c05` spike page.
 
 ## C05 Spike documentation
 
@@ -44,6 +88,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    npx expo start
    ```
+
+   For NFC, passkeys, and SecureStore testing, use `npm run dev-client` (`expo start --dev-client`) with an installed development build—not Expo Go.
 
 In the output, you'll find options to open the app in a
 

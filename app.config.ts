@@ -12,6 +12,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     ...config.ios,
     icon: './assets/expo.icon',
+    entitlements: {
+      ...(config.ios?.entitlements ?? {}),
+      'com.apple.developer.nfc.readersession.formats': ['NDEF', 'TAG'],
+    },
     infoPlist: {
       ...(config.ios?.infoPlist ?? {}),
       NFCReaderUsageDescription: 'Use NFC to read and write payment requests securely for Ding Payments.',
@@ -35,6 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/favicon.png',
   },
   plugins: [
+    'expo-dev-client',
     'expo-router',
     [
       'expo-splash-screen',
@@ -44,6 +49,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           image: './assets/images/splash-icon.png',
           imageWidth: 76,
         },
+      },
+    ],
+    [
+      'expo-secure-store',
+      {
+        faceIDPermission: 'Use Face ID to authenticate passkey operations safely.',
+        configureAndroidBackup: true,
       },
     ],
   ],
