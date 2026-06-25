@@ -16,7 +16,7 @@ export async function runStellarSpike(horizonUrl = 'https://horizon-testnet.stel
     const publicKey = keypair.publicKey();
     const secretKey = keypair.secret();
 
-    const server = new StellarSdk.Server(horizonUrl);
+    const server = new StellarSdk.Horizon.Server(horizonUrl);
     const accountData = await server.accounts().accountId(publicKey).call();
 
     return {

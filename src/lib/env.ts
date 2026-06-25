@@ -3,6 +3,7 @@ export interface AppEnv {
   horizonUrl: string;
   rpcUrl: string;
   usdcIssuer: string;
+  networkPassphrase: string;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -22,7 +23,10 @@ const horizonUrl = getEnvVar('EXPO_PUBLIC_HORIZON_URL');
 const rpcUrl = getEnvVar('EXPO_PUBLIC_RPC_URL');
 const usdcIssuer = getEnvVar('EXPO_PUBLIC_USDC_ISSUER');
 
-// Security Guardrail: Mainnet shouldn't accidentally leak defaults
+const networkPassphrase = network === 'testnet'
+  ? 'Test SDF Network ; September 2015'
+  : 'Public Global Stellar Network ; September 2015';
+
 if (network === 'mainnet') {
   if (horizonUrl.includes('testnet') || rpcUrl.includes('testnet')) {
     throw new Error('Security Guardrail: Mainnet network configuration cannot utilize Testnet node endpoints.');
@@ -34,4 +38,5 @@ export const env: AppEnv = {
   horizonUrl,
   rpcUrl,
   usdcIssuer,
+  networkPassphrase,
 };
