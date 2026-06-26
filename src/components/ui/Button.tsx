@@ -54,7 +54,8 @@ export const Button = ({
         styles.base,
         { backgroundColor, opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1 },
         style,
-      ]}>
+      ]}
+    >
       {loading ? (
         <ActivityIndicator color={labelColor} />
       ) : (

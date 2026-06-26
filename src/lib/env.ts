@@ -15,7 +15,9 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
 
 const network = getEnvVar('EXPO_PUBLIC_STELLAR_NETWORK', 'testnet') as 'testnet' | 'mainnet';
 if (network !== 'testnet' && network !== 'mainnet') {
-  throw new Error(`Configuration Error: Invalid network profile "${network}". Must be testnet or mainnet.`);
+  throw new Error(
+    `Configuration Error: Invalid network profile "${network}". Must be testnet or mainnet.`
+  );
 }
 
 const horizonUrl = getEnvVar('EXPO_PUBLIC_HORIZON_URL');
@@ -25,7 +27,9 @@ const usdcIssuer = getEnvVar('EXPO_PUBLIC_USDC_ISSUER');
 // Security Guardrail: Mainnet shouldn't accidentally leak defaults
 if (network === 'mainnet') {
   if (horizonUrl.includes('testnet') || rpcUrl.includes('testnet')) {
-    throw new Error('Security Guardrail: Mainnet network configuration cannot utilize Testnet node endpoints.');
+    throw new Error(
+      'Security Guardrail: Mainnet network configuration cannot utilize Testnet node endpoints.'
+    );
   }
 }
 

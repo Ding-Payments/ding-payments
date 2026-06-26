@@ -18,7 +18,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     infoPlist: {
       ...(config.ios?.infoPlist ?? {}),
-      NFCReaderUsageDescription: 'Use NFC to read and write payment requests securely for Ding Payments.',
+      NFCReaderUsageDescription:
+        'Use NFC to read and write payment requests securely for Ding Payments.',
       NSFaceIDUsageDescription: 'Use Face ID to authenticate passkey operations safely.',
     },
   },

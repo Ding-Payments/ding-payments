@@ -17,16 +17,25 @@ export async function initializeNfcSpike(): Promise<{ supported: boolean; detail
   };
 }
 
-export async function writeNdefJsonPayload(payload: Record<string, unknown>): Promise<NfcSpikeResult> {
+export async function writeNdefJsonPayload(
+  payload: Record<string, unknown>
+): Promise<NfcSpikeResult> {
   try {
     await NfcManager.start();
     await NfcManager.requestTechnology(NfcTech.Ndef);
 
     const jsonString = JSON.stringify(payload);
-    const record = Ndef.record(Ndef.TNF_MIME_MEDIA, JSON_TAG_TYPE, [], Buffer.from(jsonString, 'utf8'));
-    const message = [record];
+    const record = Ndef.record(
+      Ndef.TNF_MIME_MEDIA,
+      JSON_TAG_TYPE,
+      [],
+      Array.from(Buffer.from(jsonString, 'utf8'))
+    );
 
-    await NfcManager.writeNdefMessage(message);
+    // nfc-manager v3 writes an encoded NDEF byte message through the Ndef tech
+    // handler (the top-level NfcManager.writeNdefMessage was removed).
+    const bytes = Ndef.encodeMessage([record]);
+    await NfcManager.ndefHandler.writeNdefMessage(bytes);
     await NfcManager.cancelTechnologyRequest();
 
     return { success: true, message: `Wrote ${jsonString.length} bytes payload` };

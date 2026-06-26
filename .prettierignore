@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build / generated output
+dist/
+web-build/
+.expo/
+expo-env.d.ts
+*.tsbuildinfo
+
+# Native generated folders
+ios/
+android/
+
+# Lockfiles
+package-lock.json
+
+# Vendored tooling / editor & agent config (not project source)
+.agents/
+.claude/
+.cursor/
+.vscode/
+
+# Generated assets and reference docs (owned by other deliverables)
+assets/
+docs/

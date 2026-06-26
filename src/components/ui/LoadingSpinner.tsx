@@ -17,7 +17,8 @@ export const LoadingSpinner = ({ size = 'large', style }: LoadingSpinnerProps) =
     <View
       accessibilityRole="progressbar"
       accessibilityLabel="Loading"
-      style={[styles.container, style]}>
+      style={[styles.container, style]}
+    >
       <ActivityIndicator color={theme.primary} size={size} />
     </View>
   );

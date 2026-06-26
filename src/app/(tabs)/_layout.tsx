@@ -5,7 +5,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <Tabs.Screen name="receive" options={{ title: 'Receive' }} />
       <Tabs.Screen name="send" options={{ title: 'Send' }} />
       <Tabs.Screen name="history" options={{ title: 'History' }} />

@@ -20,7 +20,8 @@ export const Card = ({ children, style, ...viewProps }: CardProps) => {
         },
         style,
       ]}
-      {...viewProps}>
+      {...viewProps}
+    >
       {children}
     </View>
   );
