@@ -1,18 +1,21 @@
 # Welcome to your Expo app 👋
+
 # Ding Payments — Mobile Client MVP
 
 This repository contains the core React Native application built with Expo Router and the Soroban Smart Contract SDK for the Ding Payments network.
 
 ## 🛠 Prerequisites
-* **Node.js**: v18 or later
-* **Package Manager**: `npm`
-* **Development Target**: Physical iOS or Android device (required for NFC, passkeys, and SecureStore biometrics); simulator/emulator for UI-only work
+
+- **Node.js**: v18 or later
+- **Package Manager**: `npm`
+- **Development Target**: Physical iOS or Android device (required for NFC, passkeys, and SecureStore biometrics); simulator/emulator for UI-only work
 
 > ⚠️ Native Framework Limitation: This application leverages advanced hardware integrations including NFC capabilities and Passkey WebAuthn modules. These features cannot execute inside standard Expo Go. You must use an Expo Development Build (EAS Development Build) to validate NFC, passkeys, and SecureStore functionality on physical devices.
 
 ## 🚀 Local Development Setup
 
 1. **Clone the Repository & Fetch Dependencies**
+
    ```bash
    npm install
    ```
@@ -25,24 +28,30 @@ This repository contains the core React Native application built with Expo Route
 ## EAS Development Build
 
 1. **Install and authenticate EAS CLI**
+
    ```bash
    npm install -g eas-cli
    eas login
    ```
+
    On first setup, link the project with `eas init`. Build profiles live in `eas.json` (`development`, `preview`, `production`).
 
 2. **Create a development build**
+
    ```bash
    npm run dev:build:android
    # or
    npm run dev:build:ios
    ```
+
    Install the resulting build on a **physical device** (`.apk` on Android; iOS via internal distribution or TestFlight).
 
 3. **Start the dev client**
+
    ```bash
    npm run dev-client
    ```
+
    This runs `expo start --dev-client` and connects the installed development build to Metro.
 
 4. **Native rebuild required**
@@ -57,14 +66,36 @@ This repository contains the core React Native application built with Expo Route
 
 6. **Simulator vs physical device**
 
-   | Feature | Simulator / emulator | Physical device |
-   | --- | --- | --- |
-   | General UI / routing | Yes | Yes |
-   | NFC | No | Yes (required) |
-   | Passkeys | Limited / unreliable | Yes (required) |
-   | SecureStore + biometrics | Limited | Yes (required) |
+   | Feature                  | Simulator / emulator | Physical device |
+   | ------------------------ | -------------------- | --------------- |
+   | General UI / routing     | Yes                  | Yes             |
+   | NFC                      | No                   | Yes (required)  |
+   | Passkeys                 | Limited / unreliable | Yes (required)  |
+   | SecureStore + biometrics | Limited              | Yes (required)  |
 
    Use a physical device for native capability smoke tests, including the `/c05` spike page.
+
+## ✅ Quality checks (CI)
+
+CI (`.github/workflows/ci-client.yml`) runs the exact same npm scripts you run locally, so a green local run means a green pipeline. Run all three before opening a PR:
+
+```bash
+npm run build   # tsc --noEmit — type-checks the project
+npm run lint    # expo lint (ESLint flat config + Prettier rules)
+npm run format  # prettier --write . — auto-formats the repo
+```
+
+Helper scripts:
+
+| Script                                | Purpose                                        |
+| ------------------------------------- | ---------------------------------------------- |
+| `npm run build` / `npm run typecheck` | TypeScript type-check (`tsc --noEmit`)         |
+| `npm run lint`                        | Report lint problems (`expo lint`)             |
+| `npm run lint:fix`                    | Auto-fix lint problems                         |
+| `npm run format`                      | Format all files with Prettier                 |
+| `npm run format:check`                | Verify formatting without writing (used by CI) |
+
+Tooling config lives at the repo root: [`eslint.config.mjs`](eslint.config.mjs) (Expo flat config + Prettier) and [`.prettierrc`](.prettierrc) (`singleQuote`, `trailingComma: es5`). Editors with the ESLint and Prettier extensions pick these up automatically.
 
 ## C05 Spike documentation
 

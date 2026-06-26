@@ -25,7 +25,8 @@ export const Screen = ({
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }, style]}>
         <ScrollView
           contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ScrollView>
       </SafeAreaView>
