@@ -4,6 +4,8 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { AuthProvider } from '@/features/auth/hooks/useAuth';
+import { SessionPolicyMount } from '@/features/auth/components/SessionPolicyMount';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -11,12 +13,16 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ErrorBoundary>
-        <AnimatedSplashOverlay />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="c05" />
-        </Stack>
+        <AuthProvider>
+          <SessionPolicyMount />
+          <AnimatedSplashOverlay />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(onboarding)" />
+            <Stack.Screen name="c05" />
+          </Stack>
+        </AuthProvider>
       </ErrorBoundary>
     </ThemeProvider>
   );
