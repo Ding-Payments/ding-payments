@@ -1,71 +1,87 @@
-# Welcome to your Expo app 👋
 # Ding Payments — Mobile Client MVP
 
-This repository contains the core React Native application built with Expo Router and the Soroban Smart Contract SDK for the Ding Payments network.
+Peer-to-peer contactless (NFC) payments on Stellar with a self-custodial wallet and passkey authentication.
 
-## 🛠 Prerequisites
-* **Node.js**: v18 or later
-* **Package Manager**: `npm`
-* **Development Target**: iOS (Simulator) or Android (Emulator)
+## Prerequisites
 
-> ⚠️ **Native Framework Limitation**: This application leverages advanced hardware integrations including **NFC capabilities** and **Passkey WebAuthn modules**. These features **cannot** execute inside standard Expo Go. You must compile and run using an explicit **Development Build** (`npx expo run:ios` or `npx expo run:android`).
+- **Node.js** v20+
+- **npm**
+- **Xcode** (iOS) or **Android Studio** (Android)
+- Physical NFC devices for end-to-end NFC validation
 
-## 🚀 Local Development Setup
+> **Expo Go is not supported.** NFC and passkeys require a **development build** (`npx expo run:ios` or `npx expo run:android`).
 
-1. **Clone the Repository & Fetch Dependencies**
-   ```bash
-   npm install
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Setup
 
-## Get started
-
-1. Install dependencies
+1. Clone and install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Copy environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Start Metro:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## NFC development (C10)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The NFC core stack lives under `src/features/nfc/`:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Module | Purpose |
+|--------|---------|
+| `services/NfcService.*` | Native abstraction (support checks, sessions) |
+| `schemas/paymentRequest.ts` | Zod schema for `payment_request.v1` payloads |
+| `services/NfcPayloadCodec.ts` | Compact JSON encode/decode with size guard |
+| `services/NfcWriter.ts` / `NfcReader.ts` | Writer (receiver) and reader (payer) sessions |
+| `state/nfcSessionStore.ts` | Session state machine + `nfcActive` lock coordination |
+| `services/nfc-spike.ts` | Manual PoC helpers for device verification |
 
-## Get a fresh project
+### Rebuild after native changes
 
-When you're ready, run:
+Any change to `app.config.ts` NFC plugin settings requires a native rebuild:
 
 ```bash
-npm run reset-project
+npx expo prebuild --clean
+npx expo run:ios
+# or
+npx expo run:android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Smoke test on device
 
-### Other setup steps
+```typescript
+import { nfcSpikeCheckSupport } from '@/features/nfc/services/nfc-spike';
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+const { supported, enabled } = await nfcSpikeCheckSupport();
+```
 
-## Learn more
+See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints and payload limits (880 bytes max).
 
-To learn more about developing your project with Expo, look at the following resources:
+## Scripts
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start Expo dev server |
+| `npm run ios` | Open iOS simulator / device |
+| `npm run android` | Open Android emulator / device |
+| `npm test` | Run unit tests (schema, codec, session store) |
+| `npm run typecheck` | TypeScript check |
+| `npm run lint` | ESLint via Expo |
 
-## Join the community
+## Documentation
 
-Join our community of developers creating universal apps.
+- [Product flows & system definition](docs/ding-payments.md)
+- [Client MVP build plan](docs/build-plan-client-mvp.md)
+- [NFC library ADR](docs/adr-nfc-library.md)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## License
+
+MIT
