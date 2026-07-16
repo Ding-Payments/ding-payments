@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
+import { Link, type Href } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
@@ -52,6 +53,14 @@ export default function HomeScreen() {
           <HintRow
             title="Fresh start"
             hint={<ThemedText type="code">npm run reset-project</ThemedText>}
+          />
+          <HintRow
+            title="C05 Spike PoC"
+            hint={
+              <Link href={'/c05' as Href}>
+                <ThemedText type="code">/c05</ThemedText>
+              </Link>
+            }
           />
         </ThemedView>
 

@@ -25,11 +25,24 @@ Peer-to-peer contactless (NFC) payments on Stellar with a self-custodial wallet 
    cp .env.example .env
    ```
 
-3. Start Metro:
+3. Build requirements for native features:
+
+   - NFC and passkey research require an Expo development build or custom native runtime.
+   - Run `npx expo prebuild` and `npx expo run:android` / `npx expo run:ios` for device validation.
+   - Use `npm run dev-client` to launch a dev-client session after native dependencies are installed.
+
+4. Start Metro:
 
    ```bash
    npx expo start
    ```
+
+## C05 Spike documentation
+
+- Passkey ADR: [`docs/adr-passkey-library.md`](docs/adr-passkey-library.md)
+- Stellar ADR: [`docs/adr-stellar-sdk.md`](docs/adr-stellar-sdk.md)
+- NFC ADR: [`docs/adr-nfc-library.md`](docs/adr-nfc-library.md)
+- Spike PoC page: open `/c05` in the app after starting the dev-client.
 
 ## NFC development (C10)
 
@@ -70,6 +83,7 @@ See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints 
 | Command | Description |
 |---------|-------------|
 | `npm start` | Start Expo dev server |
+| `npm run dev-client` | Start Expo with dev-client |
 | `npm run ios` | Open iOS simulator / device |
 | `npm run android` | Open Android emulator / device |
 | `npm test` | Run unit tests (schema, codec, session store) |

@@ -745,7 +745,7 @@ C05 is an architecture governance milestone that informs implementation patterns
 **Acceptance criteria**
 
 - [ ] ADR exists for passkey library with explicit final decision.
-- [ ] ADR exists for Stellar SDK with explicit version/polifyll requirements.
+- [ ] ADR exists for Stellar SDK with explicit version/polyfill requirements.
 - [ ] ADR exists for NFC library with device matrix and payload limit notes.
 - [ ] Passkey register/authenticate works on at least one iOS and one Android device.
 - [ ] Stellar keypair generation PoC executes in Expo dev client without crash.
@@ -1015,7 +1015,7 @@ C07 executes CLI-028 through CLI-032. CLI-028 operationalizes SDK/polyfill decis
 
 **Prerequisites**
 
-- C05 Stellar SDK ADR approved and version/polifyll plan fixed
+- C05 Stellar SDK ADR approved and version/polyfill plan fixed
 - SecureKeyStore from C06 available
 - C02 env module includes Horizon/network config
 
