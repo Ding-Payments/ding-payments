@@ -1,70 +1,86 @@
-import { useCallback, useEffect, useRef } from 'react';
+/**
+ * CLI-026 — useSessionPolicy
+ *
+ * Monitors AppState transitions and activity timestamps to enforce
+ * session lock policy. Skips lock while NFC sessions are active (CLI-052).
+ */
+
+import { useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
-import { BACKGROUND_LOCK_MS, FOREGROUND_IDLE_LOCK_MS } from '@/constants/session';
+import { SESSION } from '@/constants/session';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { selectNfcActive, useNfcSessionStore } from '@/features/nfc/state/nfcSessionStore';
 
-export interface UseSessionPolicyOptions {
-  onLock?: () => void;
+interface UseSessionPolicyOptions {
+  /** Override NFC-active detection (defaults to nfcSessionStore). */
+  nfcActive?: boolean;
 }
 
-/**
- * Enforces background/idle lock policy while respecting active NFC sessions.
- * Integrates with nfcSessionStore.nfcActive (CLI-052).
- */
-export function useSessionPolicy(options: UseSessionPolicyOptions = {}) {
-  const nfcActive = useNfcSessionStore(selectNfcActive);
-  const lastInteractionRef = useRef(Date.now());
-  const backgroundAtRef = useRef<number | null>(null);
+export function useSessionPolicy({ nfcActive: nfcActiveOverride }: UseSessionPolicyOptions = {}) {
+  const nfcActiveFromStore = useNfcSessionStore(selectNfcActive);
+  const nfcActive = nfcActiveOverride ?? nfcActiveFromStore;
 
-  const touch = useCallback(() => {
-    lastInteractionRef.current = Date.now();
-  }, []);
+  const { state, lock } = useAuth();
+  const backgroundedAt = useRef<number | null>(null);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetIdleTimer = () => {
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+
+    if (state.status !== 'READY' || nfcActive) {
+      return;
+    }
+
+    idleTimerRef.current = setTimeout(() => {
+      lock();
+    }, SESSION.IDLE_LOCK_MS);
+  };
 
   useEffect(() => {
-    const handleAppState = (nextState: AppStateStatus) => {
-      if (nfcActive) {
-        return;
-      }
+    if (state.status !== 'READY') {
+      return;
+    }
 
-      const now = Date.now();
-
+    const subscription = AppState.addEventListener('change', (nextState: AppStateStatus) => {
       if (nextState === 'background' || nextState === 'inactive') {
-        backgroundAtRef.current = now;
+        backgroundedAt.current = Date.now();
         return;
       }
 
-      if (nextState === 'active' && backgroundAtRef.current !== null) {
-        const elapsed = now - backgroundAtRef.current;
-        backgroundAtRef.current = null;
-
-        if (elapsed >= BACKGROUND_LOCK_MS) {
-          options.onLock?.();
-        }
-
-        lastInteractionRef.current = now;
-      }
-    };
-
-    const subscription = AppState.addEventListener('change', handleAppState);
-
-    const idleTimer = setInterval(() => {
-      if (nfcActive || AppState.currentState !== 'active') {
+      if (nextState !== 'active') {
         return;
       }
 
-      if (Date.now() - lastInteractionRef.current >= FOREGROUND_IDLE_LOCK_MS) {
-        options.onLock?.();
-      }
-    }, 30_000);
+      const elapsed = backgroundedAt.current ? Date.now() - backgroundedAt.current : 0;
+      backgroundedAt.current = null;
 
+      if (nfcActive) {
+        resetIdleTimer();
+        return;
+      }
+
+      if (elapsed > SESSION.BACKGROUND_GRACE_MS && elapsed > SESSION.BACKGROUND_LOCK_MS) {
+        lock();
+      }
+
+      resetIdleTimer();
+    });
+
+    return () => subscription.remove();
+  }, [state.status, nfcActive, lock]);
+
+  useEffect(() => {
+    resetIdleTimer();
     return () => {
-      subscription.remove();
-      clearInterval(idleTimer);
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
     };
-  }, [nfcActive, options.onLock]);
-
-  return { nfcActive, touch };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status, state.lastAuthAt, nfcActive]);
 }
 
 export function useNfcActive(): boolean {

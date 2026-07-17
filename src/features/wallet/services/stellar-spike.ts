@@ -7,10 +7,16 @@ export type StellarSpikeResult =
   | { success: true; publicKey: string; secretKey: string; accountData: unknown }
   | { success: false; reason: string };
 
-export async function runStellarSpike(horizonUrl = 'https://horizon-testnet.stellar.org'): Promise<StellarSpikeResult> {
+export async function runStellarSpike(
+  horizonUrl = 'https://horizon-testnet.stellar.org',
+): Promise<StellarSpikeResult> {
   try {
-    globalThis.Buffer = globalThis.Buffer || (Buffer as typeof globalThis.Buffer);
-    globalThis.process = globalThis.process || process;
+    const globalScope = globalThis as typeof globalThis & {
+      Buffer?: typeof Buffer;
+      process?: typeof process;
+    };
+    globalScope.Buffer = globalScope.Buffer ?? Buffer;
+    globalScope.process = globalScope.process ?? process;
 
     const keypair = Keypair.random();
     const publicKey = keypair.publicKey();

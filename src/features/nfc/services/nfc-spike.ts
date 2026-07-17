@@ -23,7 +23,9 @@ export async function initializeNfcSpike(): Promise<{ supported: boolean; detail
 }
 
 /** C05 spike: write raw JSON NDEF payload for PoC roundtrip on `/c05`. */
-export async function writeNdefJsonPayload(payload: Record<string, unknown>): Promise<NfcSpikeResult> {
+export async function writeNdefJsonPayload(
+  payload: Record<string, unknown>,
+): Promise<NfcSpikeResult> {
   try {
     await NfcManager.start();
     await NfcManager.requestTechnology(NfcTech.Ndef);
@@ -35,9 +37,8 @@ export async function writeNdefJsonPayload(payload: Record<string, unknown>): Pr
       [],
       Array.from(Buffer.from(jsonString, 'utf8')),
     );
-    const message = [record];
-
-    await NfcManager.ndefHandler.writeNdefMessage(Ndef.encodeMessage(message));
+    const bytes = Ndef.encodeMessage([record]);
+    await NfcManager.ndefHandler.writeNdefMessage(bytes);
     await NfcManager.cancelTechnologyRequest();
 
     return { success: true, message: `Wrote ${jsonString.length} bytes payload` };

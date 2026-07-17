@@ -9,7 +9,7 @@ Peer-to-peer contactless (NFC) payments on Stellar with a self-custodial wallet 
 - **Xcode** (iOS) or **Android Studio** (Android)
 - Physical NFC devices for end-to-end NFC validation
 
-> **Expo Go is not supported.** NFC and passkeys require a **development build** (`npx expo run:ios` or `npx expo run:android`).
+> **Expo Go is not supported.** NFC, passkeys, and SecureStore require a **development build** (`npx expo run:ios` or `npx expo run:android`, or EAS dev build).
 
 ## Setup
 
@@ -17,25 +17,49 @@ Peer-to-peer contactless (NFC) payments on Stellar with a self-custodial wallet 
 
    ```bash
    npm install
-   ```
-
-2. Copy environment variables:
-
-   ```bash
    cp .env.example .env
    ```
 
-3. Build requirements for native features:
+2. Build requirements for native features:
 
-   - NFC and passkey research require an Expo development build or custom native runtime.
    - Run `npx expo prebuild` and `npx expo run:android` / `npx expo run:ios` for device validation.
    - Use `npm run dev-client` to launch a dev-client session after native dependencies are installed.
 
-4. Start Metro:
+## EAS Development Build
+
+1. Install and authenticate EAS CLI:
 
    ```bash
-   npx expo start
+   npm install -g eas-cli
+   eas login
    ```
+
+2. Create a development build:
+
+   ```bash
+   npm run dev:build:android
+   # or
+   npm run dev:build:ios
+   ```
+
+3. Start the dev client:
+
+   ```bash
+   npm run dev-client
+   ```
+
+4. **Native rebuild required** after changes to `app.config.ts` plugins, permissions, or native dependencies (`expo-dev-client`, `expo-secure-store`, `react-native-nfc-manager`, `react-native-passkey`).
+
+## Quality checks (CI)
+
+Run before opening a PR:
+
+```bash
+npm run build
+npm run lint
+npm run test
+npm run format:check
+```
 
 ## C05 Spike documentation
 
@@ -57,9 +81,7 @@ The NFC core stack lives under `src/features/nfc/`:
 | `state/nfcSessionStore.ts` | Session state machine + `nfcActive` lock coordination |
 | `services/nfc-spike.ts` | Manual PoC helpers for device verification |
 
-### Rebuild after native changes
-
-Any change to `app.config.ts` NFC plugin settings requires a native rebuild:
+### Rebuild after native NFC changes
 
 ```bash
 npx expo prebuild --clean
@@ -84,11 +106,10 @@ See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints 
 |---------|-------------|
 | `npm start` | Start Expo dev server |
 | `npm run dev-client` | Start Expo with dev-client |
-| `npm run ios` | Open iOS simulator / device |
-| `npm run android` | Open Android emulator / device |
-| `npm test` | Run unit tests (schema, codec, session store) |
-| `npm run typecheck` | TypeScript check |
+| `npm run build` / `npm run typecheck` | TypeScript check |
+| `npm test` | Run unit tests |
 | `npm run lint` | ESLint via Expo |
+| `npm run format:check` | Prettier check (CI) |
 
 ## Documentation
 

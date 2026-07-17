@@ -29,7 +29,8 @@ export async function createPasskeyCredential(): Promise<PasskeySpikeResult> {
   if (!passkeyModule?.createCredential) {
     return {
       success: false,
-      reason: 'Passkey native module is not available in this runtime. Use a dev-client with the passkey library installed.',
+      reason:
+        'Passkey native module is not available in this runtime. Use a dev-client with the passkey library installed.',
     };
   }
 
@@ -54,7 +55,8 @@ export async function authenticateWithPasskey(): Promise<{ success: boolean; rea
   if (!passkeyModule?.authenticate) {
     return {
       success: false,
-      reason: 'Passkey native module is not available in this runtime. Use a dev-client with the passkey library installed.',
+      reason:
+        'Passkey native module is not available in this runtime. Use a dev-client with the passkey library installed.',
     };
   }
 
