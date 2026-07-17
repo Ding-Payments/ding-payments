@@ -1,7 +1,4 @@
-import {
-  createMockNfcService,
-  type NfcService,
-} from '@/features/nfc/services/NfcService.types';
+import { createMockNfcService, type NfcService } from '@/features/nfc/services/NfcService.types';
 
 export const nfcService: NfcService = createMockNfcService({
   isSupported: async () => false,

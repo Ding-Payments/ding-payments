@@ -51,7 +51,11 @@ export function useNfcReader(): UseNfcReaderResult {
         },
       });
     } catch (readerError) {
-      setError(readerError instanceof NfcError ? readerError : new NfcError('NATIVE_ERROR', String(readerError)));
+      setError(
+        readerError instanceof NfcError
+          ? readerError
+          : new NfcError('NATIVE_ERROR', String(readerError))
+      );
       sessionRef.current = null;
     }
   }, [beginScanning, cancel, reset, setError, setSuccess]);

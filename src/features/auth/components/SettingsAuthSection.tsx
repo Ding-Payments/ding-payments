@@ -11,12 +11,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import {
-  Alert,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { ThemedText } from '@/components/themed-text';
@@ -88,7 +83,12 @@ export function SettingsAuthSection() {
           <ThemedText type="small" themeColor="textSecondary" style={styles.pubkeyLabel}>
             Clave pública
           </ThemedText>
-          <ThemedText type="code" numberOfLines={1} ellipsizeMode="middle" style={styles.pubkeyValue}>
+          <ThemedText
+            type="code"
+            numberOfLines={1}
+            ellipsizeMode="middle"
+            style={styles.pubkeyValue}
+          >
             {pubkeyCopied ? '¡Copiada!' : publicKey}
           </ThemedText>
         </TouchableOpacity>

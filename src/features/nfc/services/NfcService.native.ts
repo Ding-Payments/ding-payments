@@ -34,12 +34,7 @@ function payloadFromTag(tag: TagEvent): Uint8Array | null {
 }
 
 function buildNdefMessage(payload: Uint8Array): number[] {
-  const record = Ndef.record(
-    Ndef.TNF_MIME_MEDIA,
-    NFC_PAYMENT_MIME_TYPE,
-    [],
-    Array.from(payload),
-  );
+  const record = Ndef.record(Ndef.TNF_MIME_MEDIA, NFC_PAYMENT_MIME_TYPE, [], Array.from(payload));
 
   return Ndef.encodeMessage([record]);
 }

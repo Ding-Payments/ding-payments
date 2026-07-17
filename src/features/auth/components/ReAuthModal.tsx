@@ -12,12 +12,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  Modal,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { ThemedText } from '@/components/themed-text';

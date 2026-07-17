@@ -72,14 +72,14 @@ npm run format:check
 
 The NFC core stack lives under `src/features/nfc/`:
 
-| Module | Purpose |
-|--------|---------|
-| `services/NfcService.*` | Native abstraction (support checks, sessions) |
-| `schemas/paymentRequest.ts` | Zod schema for `payment_request.v1` payloads |
-| `services/NfcPayloadCodec.ts` | Compact JSON encode/decode with size guard |
-| `services/NfcWriter.ts` / `NfcReader.ts` | Writer (receiver) and reader (payer) sessions |
-| `state/nfcSessionStore.ts` | Session state machine + `nfcActive` lock coordination |
-| `services/nfc-spike.ts` | Manual PoC helpers for device verification |
+| Module                                   | Purpose                                               |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `services/NfcService.*`                  | Native abstraction (support checks, sessions)         |
+| `schemas/paymentRequest.ts`              | Zod schema for `payment_request.v1` payloads          |
+| `services/NfcPayloadCodec.ts`            | Compact JSON encode/decode with size guard            |
+| `services/NfcWriter.ts` / `NfcReader.ts` | Writer (receiver) and reader (payer) sessions         |
+| `state/nfcSessionStore.ts`               | Session state machine + `nfcActive` lock coordination |
+| `services/nfc-spike.ts`                  | Manual PoC helpers for device verification            |
 
 ### Rebuild after native NFC changes
 
@@ -102,14 +102,14 @@ See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints 
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm start` | Start Expo dev server |
-| `npm run dev-client` | Start Expo with dev-client |
-| `npm run build` / `npm run typecheck` | TypeScript check |
-| `npm test` | Run unit tests |
-| `npm run lint` | ESLint via Expo |
-| `npm run format:check` | Prettier check (CI) |
+| Command                               | Description                |
+| ------------------------------------- | -------------------------- |
+| `npm start`                           | Start Expo dev server      |
+| `npm run dev-client`                  | Start Expo with dev-client |
+| `npm run build` / `npm run typecheck` | TypeScript check           |
+| `npm test`                            | Run unit tests             |
+| `npm run lint`                        | ESLint via Expo            |
+| `npm run format:check`                | Prettier check (CI)        |
 
 ## Documentation
 

@@ -17,7 +17,7 @@ export interface StartWriterSessionOptions {
 
 export async function startWriterSession(
   request: PaymentRequest,
-  options: StartWriterSessionOptions = {},
+  options: StartWriterSessionOptions = {}
 ): Promise<NfcWriterSession> {
   const timeoutMs = options.timeoutMs ?? NFC_WRITER_TIMEOUT_MS;
   let cancelled = false;

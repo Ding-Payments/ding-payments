@@ -9,17 +9,21 @@
  * - Session state transitions via authReducer
  */
 
+import { Buffer } from 'buffer';
+
+import { SecureKeyStore } from '@/lib/SecureKeyStore';
+import { Passkey } from 'react-native-passkey';
+
 import { authReducer, INITIAL_AUTH_STATE } from '../../state/authStore';
 import {
-    AuthErrorCode,
-    createAuthError,
-    mapNativePasskeyError,
-    sanitizeAuthError,
+  AuthErrorCode,
+  createAuthError,
+  mapNativePasskeyError,
+  sanitizeAuthError,
 } from '../authErrors';
+import { PasskeyService } from '../PasskeyService';
 
-// ─── Mock dependencies ────────────────────────────────────────────────────────
-
-jest.mock('react-native-passkey', () => require('../__mocks__/passkeyNative'));
+jest.mock('react-native-passkey', () => jest.requireActual('../__mocks__/passkeyNative'));
 jest.mock('@/lib/SecureKeyStore', () => ({
   SecureKeyStore: {
     set: jest.fn().mockResolvedValue(undefined),
@@ -45,12 +49,7 @@ Object.defineProperty(global, 'crypto', {
   },
 });
 
-// Polyfill Buffer in test environment
-global.Buffer = require('buffer').Buffer;
-
-import { SecureKeyStore } from '@/lib/SecureKeyStore';
-import { Passkey } from 'react-native-passkey';
-import { PasskeyService } from '../PasskeyService';
+global.Buffer = Buffer;
 
 // ─── authErrors.ts ────────────────────────────────────────────────────────────
 

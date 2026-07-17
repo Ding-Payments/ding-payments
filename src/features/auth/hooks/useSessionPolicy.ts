@@ -5,7 +5,7 @@
  * session lock policy. Skips lock while NFC sessions are active (CLI-052).
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import { SESSION } from '@/constants/session';
@@ -25,7 +25,7 @@ export function useSessionPolicy({ nfcActive: nfcActiveOverride }: UseSessionPol
   const backgroundedAt = useRef<number | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const resetIdleTimer = () => {
+  const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) {
       clearTimeout(idleTimerRef.current);
     }
@@ -37,7 +37,7 @@ export function useSessionPolicy({ nfcActive: nfcActiveOverride }: UseSessionPol
     idleTimerRef.current = setTimeout(() => {
       lock();
     }, SESSION.IDLE_LOCK_MS);
-  };
+  }, [state.status, nfcActive, lock]);
 
   useEffect(() => {
     if (state.status !== 'READY') {
@@ -70,7 +70,7 @@ export function useSessionPolicy({ nfcActive: nfcActiveOverride }: UseSessionPol
     });
 
     return () => subscription.remove();
-  }, [state.status, nfcActive, lock]);
+  }, [state.status, nfcActive, lock, resetIdleTimer]);
 
   useEffect(() => {
     resetIdleTimer();
@@ -79,8 +79,7 @@ export function useSessionPolicy({ nfcActive: nfcActiveOverride }: UseSessionPol
         clearTimeout(idleTimerRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.status, state.lastAuthAt, nfcActive]);
+  }, [state.status, state.lastAuthAt, nfcActive, resetIdleTimer]);
 }
 
 export function useNfcActive(): boolean {

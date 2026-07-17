@@ -8,7 +8,7 @@ export type StellarSpikeResult =
   | { success: false; reason: string };
 
 export async function runStellarSpike(
-  horizonUrl = 'https://horizon-testnet.stellar.org',
+  horizonUrl = 'https://horizon-testnet.stellar.org'
 ): Promise<StellarSpikeResult> {
   try {
     const globalScope = globalThis as typeof globalThis & {

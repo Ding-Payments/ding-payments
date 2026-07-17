@@ -49,11 +49,15 @@ export function useNfcWriter(): UseNfcWriterResult {
           },
         });
       } catch (writerError) {
-        setError(writerError instanceof NfcError ? writerError : new NfcError('NATIVE_ERROR', String(writerError)));
+        setError(
+          writerError instanceof NfcError
+            ? writerError
+            : new NfcError('NATIVE_ERROR', String(writerError))
+        );
         sessionRef.current = null;
       }
     },
-    [beginWriting, cancel, reset, setError, setSuccess],
+    [beginWriting, cancel, reset, setError, setSuccess]
   );
 
   useEffect(() => {

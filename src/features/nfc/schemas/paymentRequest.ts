@@ -17,12 +17,8 @@ const AMOUNT_REGEX = /^\d+(\.\d{1,7})?$/;
 export const paymentRequestSchema = z
   .object({
     type: z.literal('payment_request'),
-    recipient: z
-      .string()
-      .regex(STELLAR_PUBLIC_KEY_REGEX, 'Invalid Stellar public key'),
-    asset: z
-      .string()
-      .refine(isSupportedAssetCode, 'Unsupported asset code'),
+    recipient: z.string().regex(STELLAR_PUBLIC_KEY_REGEX, 'Invalid Stellar public key'),
+    asset: z.string().refine(isSupportedAssetCode, 'Unsupported asset code'),
     amount: z
       .string()
       .regex(AMOUNT_REGEX, 'Amount must be a positive decimal string')
@@ -75,7 +71,7 @@ export function createPaymentRequest(
     timestamp?: number;
     expiresAt?: number;
     ttlSeconds?: number;
-  },
+  }
 ): PaymentRequest {
   const timestamp = partial.timestamp ?? Math.floor(Date.now() / 1000);
   const ttlSeconds = partial.ttlSeconds ?? 30;

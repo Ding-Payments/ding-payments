@@ -18,7 +18,10 @@ export function encodePaymentRequest(request: PaymentRequest): Uint8Array {
   return bytes;
 }
 
-export function decodePaymentRequest(bytes: Uint8Array, options?: { rejectExpired?: boolean; nowMs?: number }): PaymentRequest {
+export function decodePaymentRequest(
+  bytes: Uint8Array,
+  options?: { rejectExpired?: boolean; nowMs?: number }
+): PaymentRequest {
   assertMaxPayloadSize(bytes);
 
   let parsed: unknown;
@@ -48,7 +51,7 @@ export function assertMaxPayloadSize(bytes: Uint8Array): void {
   if (bytes.byteLength > MAX_NDEF_PAYLOAD_BYTES) {
     throw new NfcError(
       'PAYLOAD_OVERSIZE',
-      `NFC payload exceeds ${MAX_NDEF_PAYLOAD_BYTES} byte limit (${bytes.byteLength} bytes)`,
+      `NFC payload exceeds ${MAX_NDEF_PAYLOAD_BYTES} byte limit (${bytes.byteLength} bytes)`
     );
   }
 }

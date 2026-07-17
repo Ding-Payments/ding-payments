@@ -45,7 +45,7 @@ describe('NfcPayloadCodec', () => {
       decodePaymentRequest(encoded, {
         rejectExpired: true,
         nowMs: sampleRequest.expiresAt * 1000 + 1,
-      }),
+      })
     ).toThrow(/expired/i);
   });
 });

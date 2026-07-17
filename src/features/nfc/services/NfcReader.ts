@@ -16,7 +16,7 @@ export interface StartReaderSessionOptions {
 }
 
 export async function startReaderSession(
-  options: StartReaderSessionOptions,
+  options: StartReaderSessionOptions
 ): Promise<NfcReaderSession> {
   const timeoutMs = options.timeoutMs ?? NFC_READER_TIMEOUT_MS;
   let cancelled = false;

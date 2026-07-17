@@ -22,26 +22,20 @@ describe('paymentRequest schema', () => {
   });
 
   it('rejects invalid Stellar public keys', () => {
-    expect(() =>
-      parsePaymentRequest({ ...basePayload, recipient: 'INVALID' }),
-    ).toThrow();
+    expect(() => parsePaymentRequest({ ...basePayload, recipient: 'INVALID' })).toThrow();
   });
 
   it('rejects unsupported assets', () => {
-    expect(() =>
-      parsePaymentRequest({ ...basePayload, asset: 'BTC' }),
-    ).toThrow();
+    expect(() => parsePaymentRequest({ ...basePayload, asset: 'BTC' })).toThrow();
   });
 
   it('rejects non-decimal amount strings', () => {
-    expect(() =>
-      parsePaymentRequest({ ...basePayload, amount: '25,00' }),
-    ).toThrow();
+    expect(() => parsePaymentRequest({ ...basePayload, amount: '25,00' })).toThrow();
   });
 
   it('rejects expiresAt before timestamp', () => {
     expect(() =>
-      parsePaymentRequest({ ...basePayload, expiresAt: basePayload.timestamp }),
+      parsePaymentRequest({ ...basePayload, expiresAt: basePayload.timestamp })
     ).toThrow();
   });
 
@@ -58,8 +52,8 @@ describe('paymentRequest schema', () => {
   });
 
   it('parsePaymentRequestFresh rejects expired payloads', () => {
-    expect(() =>
-      parsePaymentRequestFresh(basePayload, basePayload.expiresAt * 1000 + 1),
-    ).toThrow(/expired/i);
+    expect(() => parsePaymentRequestFresh(basePayload, basePayload.expiresAt * 1000 + 1)).toThrow(
+      /expired/i
+    );
   });
 });
