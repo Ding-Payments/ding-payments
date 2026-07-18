@@ -19,7 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       ...(config.ios?.infoPlist ?? {}),
       NFCReaderUsageDescription:
-        'Use NFC to read and write payment requests securely for Ding Payments.',
+        'Ding Payments uses NFC to share and receive payment requests between devices.',
       NSFaceIDUsageDescription: 'Use Face ID to authenticate passkey operations safely.',
     },
   },
@@ -31,7 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
-    permissions: ['NFC'],
+    permissions: ['android.permission.NFC'],
     predictiveBackGestureEnabled: false,
   },
   web: {
@@ -57,6 +57,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         faceIDPermission: 'Use Face ID to authenticate passkey operations safely.',
         configureAndroidBackup: true,
+      },
+    ],
+    [
+      'react-native-nfc-manager',
+      {
+        nfcPermission:
+          'Ding Payments uses NFC to share and receive payment requests between devices.',
+        includeNdefEntitlement: true,
       },
     ],
   ],

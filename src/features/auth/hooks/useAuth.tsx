@@ -9,13 +9,7 @@
  *   Access auth state and actions via useAuth() in any component.
  */
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 
 import { SecureKeyStore } from '@/lib/SecureKeyStore';
 import { SECURE_KEYS } from '@/lib/SecureKeyStore.types';
@@ -108,11 +102,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Persist session timestamp
-    await SecureKeyStore.set(
-      SECURE_KEYS.SESSION_LAST_ACTIVE,
-      new Date().toISOString(),
-      { requireAuthentication: false }
-    ).catch(() => null);
+    await SecureKeyStore.set(SECURE_KEYS.SESSION_LAST_ACTIVE, new Date().toISOString(), {
+      requireAuthentication: false,
+    }).catch(() => null);
 
     return true;
   }, []);
@@ -140,11 +132,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       credentialId: result.result.credentialId,
     });
 
-    await SecureKeyStore.set(
-      SECURE_KEYS.SESSION_LAST_ACTIVE,
-      new Date().toISOString(),
-      { requireAuthentication: false }
-    ).catch(() => null);
+    await SecureKeyStore.set(SECURE_KEYS.SESSION_LAST_ACTIVE, new Date().toISOString(), {
+      requireAuthentication: false,
+    }).catch(() => null);
 
     return true;
   }, []);

@@ -42,7 +42,9 @@ export function CreatePasskeyView() {
         router.replace('/(tabs)/receive');
       }, 1200);
     } else {
-      setErrorMessage(state.lastError ?? 'No se pudo crear la llave de acceso. Inténtalo de nuevo.');
+      setErrorMessage(
+        state.lastError ?? 'No se pudo crear la llave de acceso. Inténtalo de nuevo.'
+      );
       setViewState('error');
     }
   }, [registerPasskey, router, state.lastError]);
@@ -59,8 +61,8 @@ export function CreatePasskeyView() {
         <View style={styles.header}>
           <ThemedText type="subtitle">Crear llave de acceso</ThemedText>
           <ThemedText themeColor="textSecondary" style={styles.description}>
-            Tu llave de acceso se almacena de forma segura en este dispositivo.
-            Se usará para proteger tu billetera y confirmar pagos.
+            Tu llave de acceso se almacena de forma segura en este dispositivo. Se usará para
+            proteger tu billetera y confirmar pagos.
           </ThemedText>
         </View>
 

@@ -32,20 +32,14 @@ export function validateRegisterChallengeResponse(
   return hasStringKeys(data, ['challenge', 'rpId', 'userId', 'expiresAt']);
 }
 
-export function validateRegisterVerifyResponse(
-  data: unknown
-): data is RegisterVerifyResponse {
+export function validateRegisterVerifyResponse(data: unknown): data is RegisterVerifyResponse {
   return hasStringKeys(data, ['publicKey', 'sessionToken', 'expiresAt']);
 }
 
-export function validateAuthChallengeResponse(
-  data: unknown
-): data is AuthChallengeResponse {
+export function validateAuthChallengeResponse(data: unknown): data is AuthChallengeResponse {
   return hasStringKeys(data, ['challenge', 'rpId', 'expiresAt']);
 }
 
-export function validateAuthVerifyResponse(
-  data: unknown
-): data is AuthVerifyResponse {
+export function validateAuthVerifyResponse(data: unknown): data is AuthVerifyResponse {
   return hasStringKeys(data, ['sessionToken', 'publicKey', 'expiresAt']);
 }

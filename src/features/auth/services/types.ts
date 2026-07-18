@@ -69,9 +69,7 @@ export type AuthenticateResult =
 
 // ─── Revocation ───────────────────────────────────────────────────────────────
 
-export type RevokeResult =
-  | { success: true }
-  | { success: false; error: AuthError };
+export type RevokeResult = { success: true } | { success: false; error: AuthError };
 
 // ─── Support check ────────────────────────────────────────────────────────────
 

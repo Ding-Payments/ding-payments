@@ -27,7 +27,10 @@ const AUTH_REQUIRED_KEYS: ReadonlySet<SecureKey> = new Set([
   SECURE_KEYS.WALLET_PUBLIC_KEY,
 ]);
 
-function buildOptions(key: SecureKey, overrides?: SecureStoreSetOptions): SecureStore.SecureStoreOptions {
+function buildOptions(
+  key: SecureKey,
+  overrides?: SecureStoreSetOptions
+): SecureStore.SecureStoreOptions {
   const requireAuth = overrides?.requireAuthentication ?? AUTH_REQUIRED_KEYS.has(key);
 
   return {

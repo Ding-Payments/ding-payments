@@ -1,66 +1,95 @@
-# ADR: NFC library selection for Expo mobile
+# ADR: NFC Library Selection — react-native-nfc-manager
 
-- Status: Accepted
-- Date: 2026-06-19
-- Related: C05, CLI-045
+- **Status:** Accepted
+- **Date:** 2026-06-19
+- **Related:** C05 (CLI-045), C10 (CLI-046–052)
 
 ## Context
 
-The app needs NFC NDEF read/write support for payment request payloads on physical devices. Expo Go cannot be used for this verification, so the runtime must be validated in a dev-client or custom native build.
+Ding Payments requires peer-to-peer NFC transport for payment-request payloads on iOS and Android. Expo Go does not expose native NFC APIs; a development build is mandatory.
 
 ## Decision
 
-We will use `react-native-nfc-manager` for NFC integration.
+Use **react-native-nfc-manager** (v3.17+) with the official Expo config plugin.
 
 ### Why this library?
 
-- It is the most mature React Native NFC library with both Android and iOS support.
-- It supports NDEF scanning and writing flows needed for payment request roundtrips.
-- It is compatible with Expo native builds and supports the required native permissions.
+- Mature NDEF read/write APIs on Android and Core NFC on iOS
+- Official Expo config plugin for permissions and entitlements
+- Active maintenance and broad community usage
+- Fits the abstraction layer (`NfcService`) without leaking native details to product code
 
 ### Alternatives considered
 
-- `react-native-hce` or similar NFC libraries: considered weaker in NDEF support for both platforms.
-- Custom native Objective-C/Java modules: higher maintenance risk and slower validation.
-- NFC-only web alternatives: rejected because the client must validate native NFC behavior on devices.
+| Option | Rejected because |
+|--------|------------------|
+| `react-native-hce` or similar | Weaker NDEF support across both platforms |
+| Custom native modules | Higher maintenance; slower validation |
+| Expo Go only | No NFC access |
+| QR-only | Out of scope for C10; planned as fallback |
 
 ## Version pinning
 
-- `react-native-nfc-manager@^3.4.0`
+- `react-native-nfc-manager@^3.17.2`
 
-## Compatibility matrix
+## Platform constraints
 
-- iOS: Core NFC supported on devices with NFC hardware and iOS 13+; iOS only supports NDEF tag discovery for this spike.
-- Android: NFC requires `android.permission.NFC`; supported devices must have NFC hardware enabled.
-- Expo Go: unsupported for NFC runtime validation.
+| Platform | Capability | Notes |
+|----------|------------|-------|
+| Android | NDEF push + tag reader mode | Primary P2P path via `setNdefPushMessage` |
+| iOS | Core NFC reader / NDEF write to tags | P2P limited; validate on physical hardware |
+| Web | Not supported | Stub returns `isSupported: false` |
+| Expo Go | Not supported | Requires dev build rebuild after native changes |
 
-## Implementation notes
+## Payload limits
 
-- App configuration is updated in `app.config.ts` to declare Android NFC permission and iOS NFC usage description.
-- The spike implementation is isolated at `src/features/nfc/services/nfc-spike.ts`.
-- The roundtrip payload for JSON NDEF should be capped to a safe practical limit, typically under 880 bytes.
-- The ADR is validated through the PoC page at `/c05` after running the Expo dev-client.
+- **Max NDEF payload:** 880 bytes (conservative; typical Type 2 tag usable ~888 bytes minus overhead)
+- **Encoding:** UTF-8 compact JSON (`application/json` MIME NDEF record)
+- **Schema:** `payment_request.v1` — see `src/features/nfc/schemas/paymentRequest.ts`
+
+## Permissions
+
+### iOS
+
+- `NFCReaderUsageDescription` in Info.plist (via config plugin)
+- NDEF entitlement: `com.apple.developer.nfc.readersession.formats` (via `includeNdefEntitlement: true`)
+
+### Android
+
+- `android.permission.NFC` in AndroidManifest (via config plugin)
+- Minimum SDK enforced by plugin (API 31+)
+
+## Session semantics (C10)
+
+| Session | Timeout | Policy |
+|---------|---------|--------|
+| Writer (receiver) | 60s | Auto-cancel + resource cleanup |
+| Reader (payer) | 45s | Single-read per session; ignore duplicates |
 
 ## Validation matrix
 
-- Android physical device: NFC initialization and NDEF write/read roundtrip works.
-- iOS physical device: NFC initialization and NDEF read/write behave as expected under Core NFC constraints.
-- Payload size validation: JSON payload remains below 880 bytes and roundtrip is successful on both test devices.
+- Android physical device: NFC initialization and NDEF write/read roundtrip works
+- iOS physical device: NFC read/write under Core NFC constraints
+- Payload size validation: JSON payload remains below 880 bytes
+- PoC page: `/c05` in dev-client for spike flows; C10 services in `src/features/nfc/`
 
-## Manual validation note
+## Rebuild requirement
 
-Use the `/c05` test page in the dev-client to execute NFC write/read flows and capture the exact read/write behavior in the ADR appendix.
+Any change to `app.config.ts` NFC plugin settings requires:
+
+```bash
+npx expo prebuild --clean
+npx expo run:ios   # or run:android
+```
 
 ## Rollback plan
 
 If `react-native-nfc-manager` is incompatible with the Expo dev-client:
 
-1. Re-evaluate with a custom `expo prebuild` workflow and explicit native module linking.
-2. If the library cannot be used, isolate NFC support behind a modular adapter and retain the ability to switch to a different NFC package or a pure native module.
+1. Re-evaluate with explicit native module linking via `expo prebuild`
+2. Isolate NFC behind `NfcService` adapter to swap library without UI changes
 
-## Known limitations
+## References
 
-- Payload size: JSON roundtrip payloads must be kept small to avoid tag write/read failures.
-- Platform differences: iOS and Android may behave differently, so the ADR must capture exact device compatibility notes.
-- Native build required: NFC validation is only reliable on an Expo dev-client or prebuilt binary.
-- iOS Core NFC only supports certain tag types and cannot run on simulator hardware.
+- [react-native-nfc-manager Expo wiki](https://github.com/revtel/react-native-nfc-manager/wiki/Expo-Go)
+- Product spec: `docs/ding-payments.md` — Proposed Payment Payload Structure

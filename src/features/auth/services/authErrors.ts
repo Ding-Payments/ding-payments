@@ -36,12 +36,12 @@ export const AuthErrorCode = {
   UNKNOWN: 'UNKNOWN',
 } as const;
 
-export type AuthErrorCode = (typeof AuthErrorCode)[keyof typeof AuthErrorCode];
+export type AuthErrorCodeValue = (typeof AuthErrorCode)[keyof typeof AuthErrorCode];
 
 // ─── Typed auth error ────────────────────────────────────────────────────────
 
 export interface AuthError {
-  code: AuthErrorCode;
+  code: AuthErrorCodeValue;
   /** User-safe Spanish message — safe to show in toasts/UI */
   message: string;
   /** Original error for internal logging only — never expose to UI */
@@ -50,32 +50,25 @@ export interface AuthError {
 
 // ─── User-safe Spanish messages ──────────────────────────────────────────────
 
-const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
+const AUTH_ERROR_MESSAGES: Record<AuthErrorCodeValue, string> = {
   USER_CANCELLED: 'Autenticación cancelada. Inténtalo de nuevo cuando estés listo.',
   NOT_SUPPORTED:
     'Este dispositivo no es compatible con llaves de acceso. Actualiza tu sistema operativo.',
-  LOCKOUT:
-    'Demasiados intentos fallidos. Espera un momento antes de intentarlo de nuevo.',
-  NO_CREDENTIAL:
-    'No se encontró ninguna llave de acceso en este dispositivo. Regístrala primero.',
-  CREDENTIAL_EXISTS:
-    'Ya existe una llave de acceso registrada para esta cuenta.',
+  LOCKOUT: 'Demasiados intentos fallidos. Espera un momento antes de intentarlo de nuevo.',
+  NO_CREDENTIAL: 'No se encontró ninguna llave de acceso en este dispositivo. Regístrala primero.',
+  CREDENTIAL_EXISTS: 'Ya existe una llave de acceso registrada para esta cuenta.',
   INVALID_REQUEST:
     'La solicitud de autenticación no es válida. Contacta al soporte si el error persiste.',
-  TIMEOUT:
-    'La solicitud tardó demasiado. Verifica tu conexión e inténtalo de nuevo.',
-  INTERRUPTED:
-    'La autenticación fue interrumpida. Por favor inténtalo de nuevo.',
-  STORE_ERROR:
-    'No se pudo acceder al almacenamiento seguro. Verifica los permisos biométricos.',
-  UNKNOWN:
-    'Ocurrió un error inesperado. Por favor inténtalo de nuevo.',
+  TIMEOUT: 'La solicitud tardó demasiado. Verifica tu conexión e inténtalo de nuevo.',
+  INTERRUPTED: 'La autenticación fue interrumpida. Por favor inténtalo de nuevo.',
+  STORE_ERROR: 'No se pudo acceder al almacenamiento seguro. Verifica los permisos biométricos.',
+  UNKNOWN: 'Ocurrió un error inesperado. Por favor inténtalo de nuevo.',
 };
 
 // ─── Native error-code → AuthErrorCode mapping ──────────────────────────────
 // Matches error strings from react-native-passkey PasskeyError constants.
 
-const NATIVE_ERROR_MAP: Record<string, AuthErrorCode> = {
+const NATIVE_ERROR_MAP: Record<string, AuthErrorCodeValue> = {
   UserCancelled: AuthErrorCode.USER_CANCELLED,
   UserCancelledError: AuthErrorCode.USER_CANCELLED,
   NotSupported: AuthErrorCode.NOT_SUPPORTED,
@@ -102,7 +95,7 @@ const NATIVE_ERROR_MAP: Record<string, AuthErrorCode> = {
 /**
  * Creates a typed AuthError with user-safe Spanish message.
  */
-export function createAuthError(code: AuthErrorCode, cause?: unknown): AuthError {
+export function createAuthError(code: AuthErrorCodeValue, cause?: unknown): AuthError {
   return {
     code,
     message: AUTH_ERROR_MESSAGES[code],
@@ -134,6 +127,9 @@ export function mapNativePasskeyError(nativeError: unknown): AuthError {
  * Sanitizes an AuthError for safe logging/analytics.
  * Strips `cause` so no raw native errors are emitted externally.
  */
-export function sanitizeAuthError(err: AuthError): { code: AuthErrorCode; message: string } {
+export function sanitizeAuthError(err: AuthError): {
+  code: AuthErrorCodeValue;
+  message: string;
+} {
   return { code: err.code, message: err.message };
 }

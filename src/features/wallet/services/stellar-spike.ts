@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import process from 'process';
 import 'react-native-get-random-values';
-import * as StellarSdk from '@stellar/stellar-sdk';
+import { Horizon, Keypair } from '@stellar/stellar-sdk';
 
 export type StellarSpikeResult =
   | { success: true; publicKey: string; secretKey: string; accountData: unknown }
@@ -11,7 +11,6 @@ export async function runStellarSpike(
   horizonUrl = 'https://horizon-testnet.stellar.org'
 ): Promise<StellarSpikeResult> {
   try {
-    // Stellar SDK expects Node-style globals; provide them in the RN runtime.
     const globalScope = globalThis as typeof globalThis & {
       Buffer?: typeof Buffer;
       process?: typeof process;
@@ -19,14 +18,12 @@ export async function runStellarSpike(
     globalScope.Buffer = globalScope.Buffer ?? Buffer;
     globalScope.process = globalScope.process ?? process;
 
-    const keypair = StellarSdk.Keypair.random();
+    const keypair = Keypair.random();
     const publicKey = keypair.publicKey();
     const secretKey = keypair.secret();
 
-    // stellar-sdk v16 namespaces the Horizon client under `Horizon.Server`
-    // (the top-level `Server` export was removed).
-    const server = new StellarSdk.Horizon.Server(horizonUrl);
-    const accountData = await server.accounts().accountId(publicKey).call();
+    const server = new Horizon.Server(horizonUrl);
+    const accountData = await server.loadAccount(publicKey);
 
     return {
       success: true,
@@ -34,10 +31,10 @@ export async function runStellarSpike(
       secretKey,
       accountData,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      reason: error?.message ?? 'Unknown Stellar spike error.',
+      reason: error instanceof Error ? error.message : 'Unknown Stellar spike error.',
     };
   }
 }

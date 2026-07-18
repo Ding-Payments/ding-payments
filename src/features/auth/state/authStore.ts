@@ -15,12 +15,7 @@
  * - LOCKED        : Session timed out — passkey re-auth required
  */
 
-export type AuthStatus =
-  | 'LOADING'
-  | 'UNAUTHENTICATED'
-  | 'ONBOARDING'
-  | 'READY'
-  | 'LOCKED';
+export type AuthStatus = 'LOADING' | 'UNAUTHENTICATED' | 'ONBOARDING' | 'READY' | 'LOCKED';
 
 export interface AuthState {
   status: AuthStatus;

@@ -12,10 +12,7 @@
  * S19 (observability/telemetry conventions).
  */
 
-import type {
-  PasskeyAuthResult,
-  PasskeyCredentialInfo,
-} from './types';
+import type { PasskeyAuthResult, PasskeyCredentialInfo } from './types';
 
 // ─── Request / Response DTOs ──────────────────────────────────────────────────
 
@@ -106,9 +103,7 @@ export const AuthApiClient = {
    * [STUB] Verify the registration credential with the server.
    * Replace with: POST /v1/auth/register/verify
    */
-  async verifyRegistration(
-    request: RegisterVerifyRequest
-  ): Promise<RegisterVerifyResponse> {
+  async verifyRegistration(request: RegisterVerifyRequest): Promise<RegisterVerifyResponse> {
     // Stub: return credential ID as placeholder public key
     return {
       publicKey: request.credential.credentialId,
@@ -121,9 +116,7 @@ export const AuthApiClient = {
    * [STUB] Request an authentication challenge from the server.
    * Replace with: POST /v1/auth/challenge
    */
-  async getAuthChallenge(
-    _request: AuthChallengeRequest
-  ): Promise<AuthChallengeResponse> {
+  async getAuthChallenge(_request: AuthChallengeRequest): Promise<AuthChallengeResponse> {
     const bytes = new Uint8Array(32);
     crypto.getRandomValues(bytes);
     const challenge = Buffer.from(bytes).toString('base64url');
@@ -138,9 +131,7 @@ export const AuthApiClient = {
    * [STUB] Verify the authentication assertion with the server.
    * Replace with: POST /v1/auth/verify
    */
-  async verifyAuthentication(
-    request: AuthVerifyRequest
-  ): Promise<AuthVerifyResponse> {
+  async verifyAuthentication(request: AuthVerifyRequest): Promise<AuthVerifyResponse> {
     return {
       sessionToken: `stub_token_${Date.now()}`,
       publicKey: request.result.credentialId,

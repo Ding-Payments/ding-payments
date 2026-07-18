@@ -1,12 +1,17 @@
 import { Buffer } from 'buffer';
 import NfcManager, { Ndef, NfcTech } from 'react-native-nfc-manager';
 
+import { createPaymentRequest } from '@/features/nfc/schemas/paymentRequest';
+import { encodePaymentRequest } from '@/features/nfc/services/NfcPayloadCodec';
+import { nfcService } from '@/features/nfc/services/nfcServiceImpl';
+
 export type NfcSpikeResult =
   | { success: true; message: string }
   | { success: false; reason: string };
 
 const JSON_TAG_TYPE = 'application/vnd.ding-payments.v1+json';
 
+/** C05 spike: check NFC runtime support in dev build. */
 export async function initializeNfcSpike(): Promise<{ supported: boolean; details: string }> {
   const supported = await NfcManager.isSupported();
   return {
@@ -17,6 +22,7 @@ export async function initializeNfcSpike(): Promise<{ supported: boolean; detail
   };
 }
 
+/** C05 spike: write raw JSON NDEF payload for PoC roundtrip on `/c05`. */
 export async function writeNdefJsonPayload(
   payload: Record<string, unknown>
 ): Promise<NfcSpikeResult> {
@@ -31,19 +37,18 @@ export async function writeNdefJsonPayload(
       [],
       Array.from(Buffer.from(jsonString, 'utf8'))
     );
-
-    // nfc-manager v3 writes an encoded NDEF byte message through the Ndef tech
-    // handler (the top-level NfcManager.writeNdefMessage was removed).
     const bytes = Ndef.encodeMessage([record]);
     await NfcManager.ndefHandler.writeNdefMessage(bytes);
     await NfcManager.cancelTechnologyRequest();
 
     return { success: true, message: `Wrote ${jsonString.length} bytes payload` };
-  } catch (error: any) {
-    return { success: false, reason: error?.message ?? 'NFC write failed.' };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'NFC write failed.';
+    return { success: false, reason: message };
   }
 }
 
+/** C05 spike: read raw JSON NDEF payload for PoC roundtrip on `/c05`. */
 export async function readNdefJsonPayload(): Promise<NfcSpikeResult> {
   try {
     await NfcManager.start();
@@ -53,17 +58,47 @@ export async function readNdefJsonPayload(): Promise<NfcSpikeResult> {
     await NfcManager.cancelTechnologyRequest();
 
     const ndefMessage = tag?.ndefMessage;
-    if (!ndefMessage || !ndefMessage.length) {
+    if (!ndefMessage?.length) {
       return { success: false, reason: 'No NDEF message found on tag.' };
     }
 
     const record = ndefMessage[0];
-    const payload = record.payload;
-    const text = Buffer.from(payload).toString('utf8');
+    const text = Buffer.from(record.payload).toString('utf8');
     JSON.parse(text);
 
     return { success: true, message: `Read JSON payload (${text.length} bytes)` };
-  } catch (error: any) {
-    return { success: false, reason: error?.message ?? 'NFC read failed.' };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'NFC read failed.';
+    return { success: false, reason: message };
   }
+}
+
+/** C10 helper: check support via NfcService abstraction. */
+export async function nfcSpikeCheckSupport(): Promise<{ supported: boolean; enabled: boolean }> {
+  const supported = await nfcService.isSupported();
+  const enabled = supported ? await nfcService.isEnabled() : false;
+  return { supported, enabled };
+}
+
+export function nfcSpikeSamplePayload(recipient: string) {
+  return createPaymentRequest({
+    recipient,
+    asset: 'USDC',
+    amount: '1.00',
+    ttlSeconds: 60,
+  });
+}
+
+/** C10 helper: broadcast sample payment request via writer session. */
+export async function nfcSpikeWriteSample(recipient: string): Promise<void> {
+  const request = nfcSpikeSamplePayload(recipient);
+  const bytes = encodePaymentRequest(request);
+
+  await nfcService.startWriterSession(bytes, {
+    alertMessage: 'NFC spike: ready to broadcast sample payment request',
+  });
+}
+
+export async function nfcSpikeCancel(): Promise<void> {
+  await nfcService.cancelSession();
 }

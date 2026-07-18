@@ -1,42 +1,40 @@
-# Welcome to your Expo app 👋
-
 # Ding Payments — Mobile Client MVP
 
-This repository contains the core React Native application built with Expo Router and the Soroban Smart Contract SDK for the Ding Payments network.
+Peer-to-peer contactless (NFC) payments on Stellar with a self-custodial wallet and passkey authentication.
 
-## 🛠 Prerequisites
+## Prerequisites
 
-- **Node.js**: v18 or later
-- **Package Manager**: `npm`
-- **Development Target**: Physical iOS or Android device (required for NFC, passkeys, and SecureStore biometrics); simulator/emulator for UI-only work
+- **Node.js** v20+
+- **npm**
+- **Xcode** (iOS) or **Android Studio** (Android)
+- Physical NFC devices for end-to-end NFC validation
 
-> ⚠️ Native Framework Limitation: This application leverages advanced hardware integrations including NFC capabilities and Passkey WebAuthn modules. These features cannot execute inside standard Expo Go. You must use an Expo Development Build (EAS Development Build) to validate NFC, passkeys, and SecureStore functionality on physical devices.
+> **Expo Go is not supported.** NFC, passkeys, and SecureStore require a **development build** (`npx expo run:ios` or `npx expo run:android`, or EAS dev build).
 
-## 🚀 Local Development Setup
+## Setup
 
-1. **Clone the Repository & Fetch Dependencies**
+1. Clone and install dependencies:
 
    ```bash
    npm install
+   cp .env.example .env
    ```
 
-2. **Build requirements for native features**
-   - NFC and passkey research require an Expo development build or custom native runtime.
+2. Build requirements for native features:
+
    - Run `npx expo prebuild` and `npx expo run:android` / `npx expo run:ios` for device validation.
    - Use `npm run dev-client` to launch a dev-client session after native dependencies are installed.
 
 ## EAS Development Build
 
-1. **Install and authenticate EAS CLI**
+1. Install and authenticate EAS CLI:
 
    ```bash
    npm install -g eas-cli
    eas login
    ```
 
-   On first setup, link the project with `eas init`. Build profiles live in `eas.json` (`development`, `preview`, `production`).
-
-2. **Create a development build**
+2. Create a development build:
 
    ```bash
    npm run dev:build:android
@@ -44,58 +42,24 @@ This repository contains the core React Native application built with Expo Route
    npm run dev:build:ios
    ```
 
-   Install the resulting build on a **physical device** (`.apk` on Android; iOS via internal distribution or TestFlight).
-
-3. **Start the dev client**
+3. Start the dev client:
 
    ```bash
    npm run dev-client
    ```
 
-   This runs `expo start --dev-client` and connects the installed development build to Metro.
+4. **Native rebuild required** after changes to `app.config.ts` plugins, permissions, or native dependencies (`expo-dev-client`, `expo-secure-store`, `react-native-nfc-manager`, `react-native-passkey`).
 
-4. **Native rebuild required**
-   Rebuild and reinstall the development build after changes to:
-   - `app.config.ts` plugins, permissions, or entitlements
-   - native dependencies (for example `expo-dev-client`, `expo-secure-store`, `react-native-nfc-manager`, `react-native-passkey`)
+## Quality checks (CI)
 
-   JavaScript-only changes do not require a native rebuild.
-
-5. **Expo Go limitations**
-   Do not use Expo Go to validate NFC, passkeys, or SecureStore with biometric authentication. These flows require a development build with `expo-dev-client`.
-
-6. **Simulator vs physical device**
-
-   | Feature                  | Simulator / emulator | Physical device |
-   | ------------------------ | -------------------- | --------------- |
-   | General UI / routing     | Yes                  | Yes             |
-   | NFC                      | No                   | Yes (required)  |
-   | Passkeys                 | Limited / unreliable | Yes (required)  |
-   | SecureStore + biometrics | Limited              | Yes (required)  |
-
-   Use a physical device for native capability smoke tests, including the `/c05` spike page.
-
-## ✅ Quality checks (CI)
-
-CI (`.github/workflows/ci-client.yml`) runs the exact same npm scripts you run locally, so a green local run means a green pipeline. Run all three before opening a PR:
+Run before opening a PR:
 
 ```bash
-npm run build   # tsc --noEmit — type-checks the project
-npm run lint    # expo lint (ESLint flat config + Prettier rules)
-npm run format  # prettier --write . — auto-formats the repo
+npm run build
+npm run lint
+npm run test
+npm run format:check
 ```
-
-Helper scripts:
-
-| Script                                | Purpose                                        |
-| ------------------------------------- | ---------------------------------------------- |
-| `npm run build` / `npm run typecheck` | TypeScript type-check (`tsc --noEmit`)         |
-| `npm run lint`                        | Report lint problems (`expo lint`)             |
-| `npm run lint:fix`                    | Auto-fix lint problems                         |
-| `npm run format`                      | Format all files with Prettier                 |
-| `npm run format:check`                | Verify formatting without writing (used by CI) |
-
-Tooling config lives at the repo root: [`eslint.config.mjs`](eslint.config.mjs) (Expo flat config + Prettier) and [`.prettierrc`](.prettierrc) (`singleQuote`, `trailingComma: es5`). Editors with the ESLint and Prettier extensions pick these up automatically.
 
 ## C05 Spike documentation
 
@@ -104,59 +68,55 @@ Tooling config lives at the repo root: [`eslint.config.mjs`](eslint.config.mjs) 
 - NFC ADR: [`docs/adr-nfc-library.md`](docs/adr-nfc-library.md)
 - Spike PoC page: open `/c05` in the app after starting the dev-client.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## NFC development (C10)
 
-## Get started
+The NFC core stack lives under `src/features/nfc/`:
 
-1. Install dependencies
+| Module                                   | Purpose                                               |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `services/NfcService.*`                  | Native abstraction (support checks, sessions)         |
+| `schemas/paymentRequest.ts`              | Zod schema for `payment_request.v1` payloads          |
+| `services/NfcPayloadCodec.ts`            | Compact JSON encode/decode with size guard            |
+| `services/NfcWriter.ts` / `NfcReader.ts` | Writer (receiver) and reader (payer) sessions         |
+| `state/nfcSessionStore.ts`               | Session state machine + `nfcActive` lock coordination |
+| `services/nfc-spike.ts`                  | Manual PoC helpers for device verification            |
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-   For NFC, passkeys, and SecureStore testing, use `npm run dev-client` (`expo start --dev-client`) with an installed development build—not Expo Go.
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Rebuild after native NFC changes
 
 ```bash
-npm run reset-project
+npx expo prebuild --clean
+npx expo run:ios
+# or
+npx expo run:android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Smoke test on device
 
-### Other setup steps
+```typescript
+import { nfcSpikeCheckSupport } from '@/features/nfc/services/nfc-spike';
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+const { supported, enabled } = await nfcSpikeCheckSupport();
+```
 
-## Learn more
+See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints and payload limits (880 bytes max).
 
-To learn more about developing your project with Expo, look at the following resources:
+## Scripts
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Command                               | Description                |
+| ------------------------------------- | -------------------------- |
+| `npm start`                           | Start Expo dev server      |
+| `npm run dev-client`                  | Start Expo with dev-client |
+| `npm run build` / `npm run typecheck` | TypeScript check           |
+| `npm test`                            | Run unit tests             |
+| `npm run lint`                        | ESLint via Expo            |
+| `npm run format:check`                | Prettier check (CI)        |
 
-## Join the community
+## Documentation
 
-Join our community of developers creating universal apps.
+- [Product flows & system definition](docs/ding-payments.md)
+- [Client MVP build plan](docs/build-plan-client-mvp.md)
+- [NFC library ADR](docs/adr-nfc-library.md)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## License
+
+MIT
