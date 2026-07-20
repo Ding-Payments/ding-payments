@@ -3,6 +3,8 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@emnapi/core": "1.11.2",
+    "@emnapi/runtime": "1.11.2",
     "@expo/ui": "~56.0.18",
     "@stellar/stellar-sdk": "^11.3.0",
     "buffer": "^6.0.3",
