@@ -1,6 +1,11 @@
 import { Platform } from 'react-native';
 
 import { NfcErrorCode } from './nfcErrors';
+import { NFC_READER_TIMEOUT_MS } from '@/features/nfc/constants/nfcConstants';
+import { decodePaymentRequest } from '@/features/nfc/services/NfcPayloadCodec';
+import type { PaymentRequest } from '@/features/nfc/schemas/paymentRequest';
+import { NfcError, toNfcError } from '@/features/nfc/services/NfcService.types';
+import { nfcService } from '@/features/nfc/services/nfcServiceImpl';
 
 export function isNfcAvailable(): boolean {
   // Basic availability detection: web is not supported here; native platforms
@@ -58,11 +63,6 @@ export class NfcReader {
 }
 
 export default NfcReader;
-import { NFC_READER_TIMEOUT_MS } from '@/features/nfc/constants/nfcConstants';
-import { decodePaymentRequest } from '@/features/nfc/services/NfcPayloadCodec';
-import type { PaymentRequest } from '@/features/nfc/schemas/paymentRequest';
-import { NfcError, toNfcError } from '@/features/nfc/services/NfcService.types';
-import { nfcService } from '@/features/nfc/services/nfcServiceImpl';
 
 export interface NfcReaderSession {
   cancel: () => Promise<void>;

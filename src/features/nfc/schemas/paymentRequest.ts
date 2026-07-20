@@ -10,7 +10,16 @@ import { z } from 'zod';
 import { isSupportedAssetCode } from '@/features/wallet/constants/assets';
 
 /** Forbidden fields helper (keep as utility) */
-export const forbiddenKeyPatterns = [/secret/i, /private/i, /seed/i, /token/i, /passphrase/i, /password/i, /privKey/i, /keyPair/i];
+export const forbiddenKeyPatterns = [
+  /secret/i,
+  /private/i,
+  /seed/i,
+  /token/i,
+  /passphrase/i,
+  /password/i,
+  /privKey/i,
+  /keyPair/i,
+];
 
 export function assertNoSecrets(obj: Record<string, any>) {
   const keys = Object.keys(obj);

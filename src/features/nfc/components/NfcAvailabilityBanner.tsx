@@ -18,8 +18,8 @@ export function NfcAvailabilityBanner() {
   return (
     <View style={{ backgroundColor: '#FFF4E5', padding: 12 }}>
       <Text style={{ color: '#663C00', marginBottom: 8 }}>
-        NFC no está disponible o está deshabilitado en este dispositivo. Para usar
-        pagos por NFC, habilítalo en ajustes.
+        NFC no está disponible o está deshabilitado en este dispositivo. Para usar pagos por NFC,
+        habilítalo en ajustes.
       </Text>
       <Pressable onPress={openSettings} style={{ alignSelf: 'flex-start' }}>
         <Text style={{ color: '#0B66FF' }}>Abrir ajustes</Text>

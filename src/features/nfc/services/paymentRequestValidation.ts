@@ -5,7 +5,10 @@ const DEFAULT_SKEW_S = 30; // seconds tolerance
 
 const dedupeCache: Map<string, number> = new Map();
 
-export function validatePaymentRequest(payload: Record<string, any>, opts?: { nowMs?: number; skewS?: number }) {
+export function validatePaymentRequest(
+  payload: Record<string, any>,
+  opts?: { nowMs?: number; skewS?: number }
+) {
   assertNoSecrets(payload);
   const nowMs = opts?.nowMs ?? Date.now();
   const skewS = opts?.skewS ?? DEFAULT_SKEW_S;

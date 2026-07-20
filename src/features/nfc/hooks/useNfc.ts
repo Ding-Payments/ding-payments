@@ -64,7 +64,14 @@ export function useNfc() {
     setStatus('idle');
   };
 
-  return { status, lastError, startReading, startWriting, cancel, isAvailable: isNfcAvailable } as const;
+  return {
+    status,
+    lastError,
+    startReading,
+    startWriting,
+    cancel,
+    isAvailable: isNfcAvailable,
+  } as const;
 }
 
 export default useNfc;
