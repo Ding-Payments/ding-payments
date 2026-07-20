@@ -1,4 +1,4 @@
-import { assertNoSecrets } from '../../paymentRequest';
+import { assertNoSecrets } from '../paymentRequest';
 
 describe('paymentRequest security guard', () => {
   it('throws when forbidden keys present', () => {

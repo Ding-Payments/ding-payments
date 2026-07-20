@@ -1,13 +1,15 @@
-export interface PaymentRequest {
-  version: string; // e.g. payment-request.v1
-  id: string;
-  amount?: number;
-  currency?: string;
-  expiresAt?: number; // epoch seconds
-  // other non-sensitive metadata fields allowed
-  [key: string]: any;
-}
+/**
+ * Canonical payment-request payload for NFC transport (payment_request.v1).
+ *
+ * @see docs/ding-payments.md — Proposed Payment Payload Structure
+ * @see docs/adr-nfc-library.md — payload size and encoding constraints
+ */
 
+import { z } from 'zod';
+
+import { isSupportedAssetCode } from '@/features/wallet/constants/assets';
+
+/** Forbidden fields helper (keep as utility) */
 export const forbiddenKeyPatterns = [/secret/i, /private/i, /seed/i, /token/i, /passphrase/i, /password/i, /privKey/i, /keyPair/i];
 
 export function assertNoSecrets(obj: Record<string, any>) {
@@ -17,17 +19,6 @@ export function assertNoSecrets(obj: Record<string, any>) {
     throw new Error(`Payload contains forbidden fields: ${matches.join(', ')}`);
   }
 }
-
-export default PaymentRequest;
-/**
- * Canonical payment-request payload for NFC transport (payment_request.v1).
- *
- * @see docs/ding-payments.md — Proposed Payment Payload Structure
- * @see docs/adr-nfc-library.md — payload size and encoding constraints
- */
-import { z } from 'zod';
-
-import { isSupportedAssetCode } from '@/features/wallet/constants/assets';
 
 /** Stellar StrKey public key (G + 55 base32 chars). */
 const STELLAR_PUBLIC_KEY_REGEX = /^G[A-Z2-7]{55}$/;

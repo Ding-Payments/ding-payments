@@ -1,20 +1,3 @@
-import { useState, useCallback } from 'react';
-
-export type NfcSessionStatus = 'idle' | 'reading' | 'writing' | 'error';
-
-export function useNfcSessionStore() {
-  const [status, setStatus] = useState<NfcSessionStatus>('idle');
-  const [lastError, setLastError] = useState<any>(null);
-
-  const setError = useCallback((e: any) => {
-    setLastError(e);
-    setStatus('error');
-  }, []);
-
-  return { status, setStatus, lastError, setError } as const;
-}
-
-export default useNfcSessionStore;
 import { create } from 'zustand';
 
 import type { PaymentRequest } from '@/features/nfc/schemas/paymentRequest';
