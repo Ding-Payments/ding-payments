@@ -16,6 +16,10 @@ export const SECURE_KEYS = {
   AUTH_STATE: 'ding.auth.state',
   /** Session timestamp of last authenticated activity */
   SESSION_LAST_ACTIVE: 'ding.session.lastActive',
+  /** Stellar account public key (StrKey G...) generated for the on-chain wallet */
+  WALLET_STELLAR_PUBLIC_KEY: 'ding.wallet.stellar.publicKey',
+  /** Stellar account secret key (StrKey S...) — never read outside signing operations */
+  WALLET_STELLAR_SECRET_KEY: 'ding.wallet.stellar.secretKey',
 } as const;
 
 export type SecureKey = (typeof SECURE_KEYS)[keyof typeof SECURE_KEYS];

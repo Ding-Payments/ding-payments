@@ -37,9 +37,8 @@ export function CreatePasskeyView() {
 
     if (success) {
       setViewState('success');
-      // Navigate to main app after brief success feedback
       setTimeout(() => {
-        router.replace('/(tabs)/receive');
+        router.replace('/(onboarding)/wallet-setup');
       }, 1200);
     } else {
       setErrorMessage(
