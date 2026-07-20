@@ -1,8 +1,11 @@
+import { Networks } from '@stellar/stellar-sdk';
+
 export interface AppEnv {
   stellarNetwork: 'testnet' | 'mainnet';
   horizonUrl: string;
   rpcUrl: string;
   usdcIssuer: string;
+  networkPassphrase: string;
 }
 
 const getEnvVar = (key: string, defaultValue?: string): string => {
@@ -38,4 +41,5 @@ export const env: AppEnv = {
   horizonUrl,
   rpcUrl,
   usdcIssuer,
+  networkPassphrase: network === 'mainnet' ? Networks.PUBLIC : Networks.TESTNET,
 };
