@@ -25,6 +25,7 @@ import { SECURE_KEYS } from './SecureKeyStore.types';
 const AUTH_REQUIRED_KEYS: ReadonlySet<SecureKey> = new Set([
   SECURE_KEYS.PASSKEY_CREDENTIAL_ID,
   SECURE_KEYS.WALLET_PUBLIC_KEY,
+  SECURE_KEYS.WALLET_STELLAR_SECRET_KEY,
 ]);
 
 function buildOptions(
