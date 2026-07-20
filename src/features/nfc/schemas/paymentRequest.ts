@@ -1,3 +1,24 @@
+export interface PaymentRequest {
+  version: string; // e.g. payment-request.v1
+  id: string;
+  amount?: number;
+  currency?: string;
+  expiresAt?: number; // epoch seconds
+  // other non-sensitive metadata fields allowed
+  [key: string]: any;
+}
+
+export const forbiddenKeyPatterns = [/secret/i, /private/i, /seed/i, /token/i, /passphrase/i, /password/i, /privKey/i, /keyPair/i];
+
+export function assertNoSecrets(obj: Record<string, any>) {
+  const keys = Object.keys(obj);
+  const matches = keys.filter((k) => forbiddenKeyPatterns.some((r) => r.test(k)));
+  if (matches.length > 0) {
+    throw new Error(`Payload contains forbidden fields: ${matches.join(', ')}`);
+  }
+}
+
+export default PaymentRequest;
 /**
  * Canonical payment-request payload for NFC transport (payment_request.v1).
  *
