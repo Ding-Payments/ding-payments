@@ -1,6 +1,6 @@
 import { Horizon } from '@stellar/stellar-sdk';
 
-import { fetchBalances, parseBalances } from './BalanceService';
+import { fetchBalances, getMinimumBalanceStroops, parseBalances, parseNativeBalanceStroops, parseUsdcBalanceStroops } from './BalanceService';
 
 jest.mock('@stellar/stellar-sdk', () => {
   const horizonServerInstance = {
@@ -70,6 +70,53 @@ describe('parseBalances', () => {
   it('defaults the XLM balance to 0 when no native line is present', () => {
     const result = parseBalances({ balances: [] });
     expect(result.xlm).toBe('0');
+  });
+});
+
+describe('parseNativeBalanceStroops', () => {
+  it('converts Horizon native balance strings to stroops without floating point', () => {
+    const stroops = parseNativeBalanceStroops({
+      balances: [{ asset_type: 'native', balance: '123.4567890' } as never],
+    });
+
+    expect(stroops).toBe(1234567890n);
+    expect(typeof stroops).toBe('bigint');
+  });
+
+  it('returns 0n when no native line is present', () => {
+    expect(parseNativeBalanceStroops({ balances: [] })).toBe(0n);
+  });
+});
+
+describe('parseUsdcBalanceStroops', () => {
+  it('converts matching USDC trustline balances to stroops', () => {
+    const stroops = parseUsdcBalanceStroops({
+      balances: [
+        {
+          asset_type: 'credit_alphanum4',
+          asset_code: 'USDC',
+          asset_issuer: USDC_ISSUER,
+          balance: '10.5000001',
+        } as never,
+      ],
+    });
+
+    expect(stroops).toBe(105000001n);
+  });
+
+  it('returns 0n when no configured USDC trustline exists', () => {
+    expect(parseUsdcBalanceStroops({ balances: [] })).toBe(0n);
+  });
+});
+
+describe('getMinimumBalanceStroops', () => {
+  it('returns 1 XLM (10_000_000 stroops) for subentry_count 0', () => {
+    expect(getMinimumBalanceStroops(0)).toBe(10_000_000n);
+  });
+
+  it('scales reserve with subentry_count using (2 + n) * base reserve', () => {
+    expect(getMinimumBalanceStroops(3)).toBe(25_000_000n);
+    expect(getMinimumBalanceStroops(10)).toBe(60_000_000n);
   });
 });
 

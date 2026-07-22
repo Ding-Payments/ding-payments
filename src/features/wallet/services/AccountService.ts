@@ -1,13 +1,9 @@
-import { Horizon, Keypair, NotFoundError } from '@stellar/stellar-sdk';
+import { Keypair, NotFoundError } from '@stellar/stellar-sdk';
 
 import { env } from '@/lib/env';
 import { SecureKeyStore } from '@/lib/SecureKeyStore';
 import { SECURE_KEYS } from '@/lib/SecureKeyStore.types';
-import { ensureStellarPolyfills } from './stellarPolyfills';
-
-ensureStellarPolyfills();
-
-const server = new Horizon.Server(env.horizonUrl);
+import { stellarHorizonClient } from './StellarHorizonClient';
 
 export interface WalletKeypair {
   publicKey: string;
@@ -53,7 +49,7 @@ export const AccountService = {
 
   async accountExistsOnNetwork(publicKey: string): Promise<boolean> {
     try {
-      await server.loadAccount(publicKey);
+      await stellarHorizonClient.loadAccount(publicKey);
       return true;
     } catch (error) {
       if (error instanceof NotFoundError) {
@@ -72,7 +68,7 @@ export const AccountService = {
     }
 
     try {
-      await server.friendbot(publicKey).call();
+      await stellarHorizonClient.fundWithFriendbot(publicKey);
       return { outcome: 'funded' };
     } catch (error) {
       if (isAccountAlreadyFundedError(error)) {

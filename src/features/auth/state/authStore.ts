@@ -19,7 +19,7 @@ export type AuthStatus = 'LOADING' | 'UNAUTHENTICATED' | 'ONBOARDING' | 'READY' 
 
 export interface AuthState {
   status: AuthStatus;
-  /** Wallet public key (Stellar address) — null until wallet is created */
+  /** Passkey credential ID (WALLET_PUBLIC_KEY) — not a Stellar G-address */
   publicKey: string | null;
   /** Passkey credential ID — null until passkey is registered */
   credentialId: string | null;

@@ -2,6 +2,7 @@ import { Horizon, NotFoundError } from '@stellar/stellar-sdk';
 
 import { SecureKeyStore } from '@/lib/SecureKeyStore';
 import { env } from '@/lib/env';
+import { mapHorizonError, WalletErrorCode } from './walletErrors';
 import { AccountService } from './AccountService';
 
 jest.mock('@stellar/stellar-sdk', () => {
@@ -95,6 +96,23 @@ describe('AccountService.accountExistsOnNetwork', () => {
     server.loadAccount.mockRejectedValueOnce(new Error('network down'));
     await expect(AccountService.accountExistsOnNetwork('GPUB')).rejects.toThrow('network down');
   });
+
+  it('allows callers to map rethrown Horizon failures via walletErrors', async () => {
+    const networkError = new TypeError('Network request failed');
+    server.loadAccount.mockRejectedValueOnce(networkError);
+
+    await expect(AccountService.accountExistsOnNetwork('GPUB')).rejects.toThrow('Network request failed');
+    expect(mapHorizonError(networkError).code).toBe(WalletErrorCode.NETWORK_ERROR);
+  });
+
+  it('maps NotFoundError separately from network failures at the wallet boundary', () => {
+    expect(mapHorizonError(new NotFoundError('missing', {})).code).toBe(
+      WalletErrorCode.ACCOUNT_NOT_FOUND
+    );
+    expect(mapHorizonError(new TypeError('Network request failed')).code).toBe(
+      WalletErrorCode.NETWORK_ERROR
+    );
+  });
 });
 
 describe('AccountService.fundTestnetAccount', () => {
@@ -124,6 +142,35 @@ describe('AccountService.fundTestnetAccount', () => {
     const result = await AccountService.fundTestnetAccount('GPUB');
 
     expect(result).toEqual({ outcome: 'already_funded' });
+  });
+
+  it('treats op_already_exists result codes as already funded', async () => {
+    const error = Object.assign(new Error('Bad Request'), {
+      response: {
+        data: {
+          extras: {
+            result_codes: {
+              operations: ['op_already_exists'],
+            },
+          },
+        },
+      },
+    });
+    friendbotCall.mockRejectedValueOnce(error);
+
+    const result = await AccountService.fundTestnetAccount('GPUB');
+
+    expect(result).toEqual({ outcome: 'already_funded' });
+  });
+
+  it('maps friendbot network failures to NETWORK_ERROR via walletErrors', async () => {
+    const networkError = new TypeError('Network request failed');
+    friendbotCall.mockRejectedValueOnce(networkError);
+
+    const result = await AccountService.fundTestnetAccount('GPUB');
+
+    expect(result.outcome).toBe('error');
+    expect(mapHorizonError(networkError).code).toBe(WalletErrorCode.NETWORK_ERROR);
   });
 
   it('surfaces a user-safe error on a genuine funding failure', async () => {

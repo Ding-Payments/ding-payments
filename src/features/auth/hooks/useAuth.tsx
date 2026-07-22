@@ -14,6 +14,7 @@ import React, { createContext, useCallback, useContext, useEffect, useReducer } 
 import { SecureKeyStore } from '@/lib/SecureKeyStore';
 import { SECURE_KEYS } from '@/lib/SecureKeyStore.types';
 import { toast } from '@/lib/toast';
+import { useWalletStore } from '@/features/wallet/state/walletStore';
 import { AuthErrorCode, sanitizeAuthError } from '../services/authErrors';
 import { PasskeyService } from '../services/PasskeyService';
 import { INITIAL_AUTH_STATE, authReducer } from '../state/authStore';
@@ -147,6 +148,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Logout ──────────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
     await PasskeyService.revoke();
+
+    await Promise.all([
+      SecureKeyStore.delete(SECURE_KEYS.WALLET_STELLAR_PUBLIC_KEY).catch(() => null),
+      SecureKeyStore.delete(SECURE_KEYS.WALLET_STELLAR_SECRET_KEY).catch(() => null),
+      SecureKeyStore.delete(SECURE_KEYS.SESSION_LAST_ACTIVE).catch(() => null),
+    ]);
+
+    useWalletStore.getState().reset();
     dispatch({ type: 'LOGOUT' });
   }, []);
 

@@ -16,6 +16,9 @@ export const AnalyticsEvents = {
   NFC_READ_FAILURE: 'nfc_read_failure',
   NFC_WRITE_SUCCESS: 'nfc_write_success',
   NFC_WRITE_FAILURE: 'nfc_write_failure',
+
+  // Wallet errors (CLI-041)
+  WALLET_ERROR: 'wallet_error',
 } as const;
 
 export type AnalyticsEventName = (typeof AnalyticsEvents)[keyof typeof AnalyticsEvents];
@@ -32,4 +35,9 @@ export interface ReceiveEventProperties {
   asset: string;
   reason?: string;
   duration_ms?: number;
+}
+
+/** Allowed properties for wallet error events. Code only — no cause or Horizon payloads. */
+export interface WalletEventProperties {
+  code: string;
 }

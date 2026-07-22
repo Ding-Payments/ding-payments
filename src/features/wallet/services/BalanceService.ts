@@ -1,12 +1,13 @@
 import { Horizon } from '@stellar/stellar-sdk';
 
-import { env } from '@/lib/env';
 import { STELLAR_ASSETS } from '@/features/wallet/constants/assets';
-import { ensureStellarPolyfills } from './stellarPolyfills';
+import {
+  getMinimumBalanceStroops,
+  horizonBalanceToStroops,
+} from '@/features/wallet/utils/stellarReserve';
+import { stellarHorizonClient } from './StellarHorizonClient';
 
-ensureStellarPolyfills();
-
-const server = new Horizon.Server(env.horizonUrl);
+export { getMinimumBalanceStroops };
 
 export interface WalletBalances {
   xlm: string;
@@ -15,6 +16,31 @@ export interface WalletBalances {
 }
 
 type AccountBalances = Pick<Horizon.AccountResponse, 'balances'>;
+
+type AccountWithNativeBalance = Pick<Horizon.AccountResponse, 'balances'>;
+
+export function parseNativeBalanceStroops(account: AccountWithNativeBalance): bigint {
+  const nativeLine = account.balances.find((balance) => balance.asset_type === 'native');
+  if (!nativeLine) {
+    return 0n;
+  }
+
+  return horizonBalanceToStroops(nativeLine.balance);
+}
+
+export function parseUsdcBalanceStroops(account: AccountBalances): bigint {
+  for (const line of account.balances) {
+    if (
+      'asset_code' in line &&
+      line.asset_code === STELLAR_ASSETS.USDC.code &&
+      line.asset_issuer === STELLAR_ASSETS.USDC.issuer
+    ) {
+      return horizonBalanceToStroops(line.balance);
+    }
+  }
+
+  return 0n;
+}
 
 export function parseBalances(account: AccountBalances): WalletBalances {
   let xlm = '0';
@@ -41,11 +67,14 @@ export function parseBalances(account: AccountBalances): WalletBalances {
 }
 
 export async function fetchBalances(publicKey: string): Promise<WalletBalances> {
-  const account = await server.loadAccount(publicKey);
+  const account = await stellarHorizonClient.loadAccount(publicKey);
   return parseBalances(account);
 }
 
 export const BalanceService = {
   parseBalances,
+  parseNativeBalanceStroops,
+  parseUsdcBalanceStroops,
+  getMinimumBalanceStroops,
   fetchBalances,
 };

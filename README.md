@@ -115,6 +115,7 @@ See [docs/adr-nfc-library.md](docs/adr-nfc-library.md) for platform constraints 
 
 - [Product flows & system definition](docs/ding-payments.md)
 - [Client MVP build plan](docs/build-plan-client-mvp.md)
+- [Wallet flow (C09)](docs/wallet-flow.md)
 - [NFC library ADR](docs/adr-nfc-library.md)
 - [Receive payment flow (C12)](docs/receive-flow.md)
 - [NFC runtime flow and troubleshooting](docs/nfc-flow.md)

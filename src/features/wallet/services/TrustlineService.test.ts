@@ -5,9 +5,17 @@ import {
   ensureUsdcTrustline,
   hasSufficientReserveForTrustline,
   hasUsdcTrustline,
+  TrustlineService,
 } from './TrustlineService';
 
 jest.mock('@stellar/stellar-sdk', () => {
+  class MockNotFoundError extends Error {
+    constructor(message?: string) {
+      super(message ?? 'Not Found');
+      this.name = 'NotFoundError';
+    }
+  }
+
   class MockAsset {
     code: string;
     issuer?: string;
@@ -49,6 +57,7 @@ jest.mock('@stellar/stellar-sdk', () => {
       changeTrust: jest.fn().mockReturnValue({}),
     },
     TransactionBuilder: MockTransactionBuilder,
+    NotFoundError: MockNotFoundError,
     Networks: {
       PUBLIC: 'Public Global Stellar Network ; September 2015',
       TESTNET: 'Test SDF Network ; September 2015',
@@ -175,5 +184,52 @@ describe('ensureUsdcTrustline', () => {
     const result = await ensureUsdcTrustline('GPUB');
 
     expect(result.status).toBe('error');
+  });
+});
+
+describe('TrustlineService.checkUsdcTrustline', () => {
+  const PUBLIC_KEY = 'GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUVWXY';
+
+  beforeEach(() => {
+    server.loadAccount.mockReset();
+  });
+
+  it('returns hasLine: true when the account has a matching USDC trustline', async () => {
+    server.loadAccount.mockResolvedValueOnce({
+      balances: [
+        { asset_type: 'native', balance: '100' },
+        {
+          asset_type: 'credit_alphanum4',
+          asset_code: 'USDC',
+          asset_issuer: USDC_ISSUER,
+          balance: '50',
+        },
+      ],
+    });
+
+    const service = new TrustlineService();
+    const result = await service.checkUsdcTrustline(PUBLIC_KEY);
+
+    expect(result).toEqual({ hasLine: true, sufficientReserve: true });
+  });
+
+  it('returns hasLine: false when no USDC trustline entry exists', async () => {
+    server.loadAccount.mockResolvedValueOnce({
+      balances: [{ asset_type: 'native', balance: '100' }],
+    });
+
+    const service = new TrustlineService();
+    const result = await service.checkUsdcTrustline(PUBLIC_KEY);
+
+    expect(result).toEqual({ hasLine: false, sufficientReserve: true });
+  });
+
+  it('returns hasLine: false when the account cannot be found', async () => {
+    server.loadAccount.mockRejectedValueOnce(new Error('Not Found'));
+
+    const service = new TrustlineService();
+    const result = await service.checkUsdcTrustline(PUBLIC_KEY);
+
+    expect(result).toEqual({ hasLine: false, sufficientReserve: false });
   });
 });
