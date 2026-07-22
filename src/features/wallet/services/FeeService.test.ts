@@ -189,7 +189,7 @@ describe('canAffordPayment', () => {
 
   it('returns account_not_found when Horizon reports a missing account', async () => {
     const horizonClient = createMockHorizonClient();
-    horizonClient.loadAccount.mockRejectedValueOnce(new NotFoundError('missing'));
+    horizonClient.loadAccount.mockRejectedValueOnce(new NotFoundError('missing', {}));
 
     const result = await canAffordPayment(PUBLIC_KEY, '1', 'XLM', { horizonClient });
 

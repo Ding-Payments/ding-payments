@@ -48,7 +48,7 @@ function horizonSubmitError(resultCodes: {
 
 describe('mapHorizonError', () => {
   it.each([
-    ['NotFoundError', new NotFoundError('missing'), WalletErrorCode.ACCOUNT_NOT_FOUND],
+    ['NotFoundError', new NotFoundError('missing', {}), WalletErrorCode.ACCOUNT_NOT_FOUND],
     [
       'op_underfunded',
       horizonSubmitError({ transaction: 'tx_failed', operations: ['op_underfunded'] }),

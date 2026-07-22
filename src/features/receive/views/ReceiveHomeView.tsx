@@ -6,8 +6,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Button, Screen, TextInput } from '@/components/ui';
@@ -24,7 +22,6 @@ import {
 import { useTheme } from '@/hooks/use-theme';
 import { trackEvent } from '@/lib/analytics';
 import { AssetSelector } from '@/features/wallet/components/AssetSelector';
-import type { SupportedAssetCode } from '@/features/wallet/constants/assets';
 
 export const ReceiveHomeView = () => {
   const theme = useTheme();

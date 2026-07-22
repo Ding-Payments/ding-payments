@@ -339,7 +339,7 @@ describe('buildPaymentTx', () => {
   });
 
   it('throws PaymentTxBuildError when Horizon returns NotFoundError for the source account', async () => {
-    mockLoadAccount.mockRejectedValueOnce(new NotFoundError('missing account'));
+    mockLoadAccount.mockRejectedValueOnce(new NotFoundError('missing account', {}));
 
     await expect(
       buildPaymentTx({
@@ -350,7 +350,7 @@ describe('buildPaymentTx', () => {
       })
     ).rejects.toThrow(PaymentTxBuildError);
 
-    expect(mapHorizonError(new NotFoundError('missing account')).code).toBe(
+    expect(mapHorizonError(new NotFoundError('missing account', {})).code).toBe(
       WalletErrorCode.ACCOUNT_NOT_FOUND
     );
   });
